@@ -387,3 +387,139 @@ def vis_one_image(
     output_name = os.path.basename(im_name) + '.' + ext
     fig.savefig(os.path.join(output_dir, '{}'.format(output_name)), dpi=dpi)
     plt.close('all')
+
+def vis_one_image_srishti(
+        im, im_name, output_dir, boxes, segms=None, keypoints=None, thresh=0.9,
+        kp_thresh=2, dpi=200, box_alpha=0.0, dataset=None, show_class=False,
+        ext='pdf'):
+    """Visual debugging of detections."""
+    if not os.path.exists(output_dir):
+        os.makedirs(output_dir)
+
+    if isinstance(boxes, list):
+        boxes, segms, keypoints, classes = convert_from_cls_format(
+            boxes, segms, keypoints)
+
+    if boxes is None or boxes.shape[0] == 0 or max(boxes[:, 4]) < thresh:
+        return
+
+    dataset_keypoints, _ = keypoint_utils.get_keypoints()
+
+    if segms is not None:
+        masks = mask_util.decode(segms)
+
+    color_list = colormap(rgb=True) / 255
+
+    kp_lines = kp_connections(dataset_keypoints)
+    cmap = plt.get_cmap('rainbow')
+    colors = [cmap(i) for i in np.linspace(0, 1, len(kp_lines) + 2)]
+
+    fig = plt.figure(frameon=False)
+    fig.set_size_inches(im.shape[1] / dpi, im.shape[0] / dpi)
+    ax = plt.Axes(fig, [0., 0., 1., 1.])
+    ax.axis('off')
+    fig.add_axes(ax)
+    ax.imshow(im)
+
+    # Display in largest to smallest order to reduce occlusion
+    areas = (boxes[:, 2] - boxes[:, 0]) * (boxes[:, 3] - boxes[:, 1])
+    sorted_inds = np.argsort(-areas)
+
+    mask_color_id = 0
+    for i in sorted_inds:
+        bbox = boxes[i, :4]
+        score = boxes[i, -1]
+        if score < thresh:
+            continue
+
+        # show mask
+        if segms is not None and len(segms) > i:
+            img = np.ones(im.shape)
+            color_mask = color_list[mask_color_id % len(color_list), 0:3]
+            mask_color_id += 1
+
+            w_ratio = .4
+            for c in range(3):
+                color_mask[c] = color_mask[c] * (1 - w_ratio) + w_ratio
+            for c in range(3):
+                img[:, :, c] = color_mask[c]
+            e = masks[:, :, i]
+
+            _, contour, hier = cv2.findContours(
+                e.copy(), cv2.RETR_CCOMP, cv2.CHAIN_APPROX_NONE)
+
+            iterator = 0
+            for c in contour:
+                iterator = iterator +1
+                if iterator > 2:
+                    break
+                polygon = Polygon(
+                    c.reshape((-1, 2)),
+                    fill=True, facecolor=color_mask,
+                    edgecolor='w', linewidth=1.2,
+                    alpha=0.5)
+                ax.add_patch(polygon)
+
+    output_name_png = os.path.basename(im_name) + '.' + 'png'
+    fig.savefig(os.path.join(output_dir, '{}'.format(output_name_png)), dpi=dpi)
+
+    plt.close('all')
+
+
+def segmented_images(
+        im, im_name, output_dir, boxes, segms=None, keypoints=None, thresh=0.9,
+        kp_thresh=2, dpi=200, box_alpha=0.0, dataset=None, show_class=False,
+        ext='pdf'):
+    """Extract segmented images."""
+    if not os.path.exists(output_dir):
+        os.makedirs(output_dir)
+
+    if isinstance(boxes, list):
+        boxes, segms, keypoints, classes = convert_from_cls_format(
+            boxes, segms, keypoints)
+
+    if boxes is None or boxes.shape[0] == 0 or max(boxes[:, 4]) < thresh:
+        return
+
+    if segms is not None:
+        masks = mask_util.decode(segms)
+
+    color_list = colormap(rgb=True) / 255
+
+    # Display in largest to smallest order to reduce occlusion
+    areas = (boxes[:, 2] - boxes[:, 0]) * (boxes[:, 3] - boxes[:, 1])
+    sorted_inds = np.argsort(-areas)
+
+    mask_color_id = 0
+    segmented_images = []
+    segmented_classes = []
+    segmented_scores = []
+    for i in sorted_inds:
+        bbox = boxes[i, :4]
+        score = boxes[i, -1]
+        if score < thresh:
+            continue
+
+        # show mask
+        if segms is not None and len(segms) > i:
+            img = np.zeros(im.shape)
+            color_mask = color_list[mask_color_id % len(color_list), 0:3]
+            mask_color_id += 1
+
+            w_ratio = .4
+            e = masks[:, :, i]
+
+            for channel in range(3):
+                img[:,:, channel] = im[:,:, channel] * e[:,:]
+            _, contour, hier = cv2.findContours(
+                e.copy(), cv2.RETR_CCOMP, cv2.CHAIN_APPROX_NONE)
+            for c in contour:
+                x, y, w, h = cv2.boundingRect(c)
+                img_countour = np.zeros([h, w, 3])
+                for channel in range(3):
+                    img_countour[:, :, channel] = img[y:h + y, x:w + x, channel]
+                segmented_images.insert(len(segmented_images), img_countour)
+                segmented_classes.insert(len(segmented_classes), dataset.classes[classes[i]])
+                segmented_scores.insert(len(segmented_scores), score)
+    return segmented_images, segmented_classes, segmented_scores
+
