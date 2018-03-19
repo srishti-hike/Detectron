@@ -33,7 +33,7 @@ from flask import send_from_directory
 
 app = Flask(__name__)
 
-input_file_path = "/mnt/api_files/input"
+input_file_path = "/mnt/api_files/input/"
 
 def parse_args():
     parser = argparse.ArgumentParser(description='End-to-end inference')
@@ -89,8 +89,8 @@ merge_cfg_from_file(args.cfg)
 cfg.TEST.WEIGHTS = args.weights
 cfg.NUM_GPUS = 1
 assert_and_infer_cfg()
-model = infer_engine.initialize_model_from_cfg()
-dummy_coco_dataset = dummy_datasets.get_coco_dataset()
+#model = infer_engine.initialize_model_from_cfg()
+#dummy_coco_dataset = dummy_datasets.get_coco_dataset()
 
 @app.route('/')
 def hello_world():
