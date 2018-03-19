@@ -134,7 +134,7 @@ def main(args):
     logger.info('about to assert')
     assert_and_infer_cfg()
     logger.info('About to initialise model')
-    model = infer_engine.initialize_model_from_cfg(gpu_id=1)
+    model = infer_engine.initialize_model_from_cfg()
     logger.info("Done initialising")
     dummy_coco_dataset = dummy_datasets.get_coco_dataset()
 
@@ -183,7 +183,7 @@ def main(args):
                 logger.info('Writing output file to: {}'.format(str(i)))
                 cv2.imwrite(args.output_dir + '/' + str(i) + '_' + args.class_label + '_' + `index` + ".png", value)
                 found = True
-                add_background(args.output_dir + '/' + str(i) + '_' + args.class_label + '_' + `index` + ".png")
+                # add_background(args.output_dir + '/' + str(i) + '_' + args.class_label + '_' + `index` + ".png")
 
 if __name__ == '__main__':
     workspace.GlobalInit(['caffe2', '--caffe2_log_level=0'])
