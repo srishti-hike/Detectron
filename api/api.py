@@ -41,21 +41,21 @@ def parse_args():
         '--cfg',
         dest='cfg',
         help='cfg model file (/path/to/model_config.yaml)',
-        default='configs/12_2017_baselines/e2e_mask_rcnn_R-101-FPN_2x.yaml',
+        default=None,
         type=str
     )
     parser.add_argument(
         '--wts',
         dest='weights',
         help='weights model file (/path/to/model_weights.pkl)',
-        default='https://s3-us-west-2.amazonaws.com/detectron/35861858/12_2017_baselines/e2e_mask_rcnn_R-101-FPN_2x.yaml.02_32_51.SgT4y1cO/output/train/coco_2014_train:coco_2014_valminusminival/generalized_rcnn/model_final.pkl',
+        default=None,
         type=str
     )
     parser.add_argument(
         '--output-dir',
         dest='output_dir',
         help='directory for visualization pdfs (default: /tmp/infer_simple)',
-        default='/tmp/detectron-visualizations',
+        default='/tmp/infer_simple',
         type=str
     )
     parser.add_argument(
