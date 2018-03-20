@@ -13,6 +13,7 @@ app = Flask(__name__)
 
 INPUT_FILE_PATH = "/mnt/api_files/input/"
 GS_BUCKET = "gs://microapps-175405.appspot.com/srishti/"
+CURL_PATH = "https://storage.googleapis.com/microapps-175405.appspot.com/srishti/"
 OUTPUT_FILE_EXTENSION = '_output.png'
 
 @app.route('/')
@@ -29,7 +30,7 @@ def upload_file_done():
         f = request.files['file']
         key = uuid.uuid4()
         f.save(INPUT_FILE_PATH + secure_filename(str(key) + '.jpg'))
-        return 'file uploaded successfully with UUID : '+ GS_BUCKET + str(key) + OUTPUT_FILE_EXTENSION
+        return 'file uploaded successfully. Hit this to see results: : '+ CURL_PATH + str(key) + OUTPUT_FILE_EXTENSION
 
 if __name__ == '__main__':
       app.run(host='0.0.0.0', port=8000)
