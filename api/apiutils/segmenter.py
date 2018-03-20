@@ -34,6 +34,8 @@ c2_utils.import_detectron_ops()
 cv2.ocl.setUseOpenCL(False)
 
 MILLISECONDS_IN_SECOND= 1000.0
+DIRECTORY_TO_WATCH = "/mnt/api_files/input/"
+DIRECTORY_TO_WRITE = "/mnt/api_files/output/"
 
 def parse_args():
     parser = argparse.ArgumentParser(description='End-to-end inference')
@@ -80,7 +82,7 @@ def parse_args():
         sys.exit(1)
     return parser.parse_args()
 
-def segment(im_list):
+def segment(im_list, filename):
     for i, im_name in enumerate(im_list):
         out_name = os.path.join(
             args.output_dir, '{}'.format(os.path.basename(im_name) + '.pdf')
@@ -118,16 +120,18 @@ def segment(im_list):
         for index, value in enumerate(segmented_images):
             if classes[index] == args.class_label and not found:
                 logger.info('Writing output file to: {}'.format(str(i)))
-                cv2.imwrite(args.output_dir + '/' + str(i) + '_' + args.class_label + '_' + `index` + ".png", value)
+                # cv2.imwrite(args.output_dir + '/' + str(i) + '_' + args.class_label + '_' + `index` + ".png", value)
+                cv2.imwrite(DIRECTORY_TO_WRITE +filename.rstrip(".jpg") + '_output.png', value)
+                cmd = "gsutil cp " + DIRECTORY_TO_WRITE + filename.rstrip(".jpg") + '_output.png' + " gs://hike_datascience/srishti/"
                 found = True
 
 class Watcher:
-    DIRECTORY_TO_WATCH = "/mnt/api_files/input/"
+
 
     def __init__(self):
         self.observer = Observer()
 
-    def run(self, model, dummy_coco_dataset):
+    def run(self):
         event_handler = Handler()
         self.observer.schedule(event_handler, self.DIRECTORY_TO_WATCH, recursive=True)
         self.observer.start()
@@ -152,7 +156,9 @@ class Handler(FileSystemEventHandler):
             # Take any action here when a file is first created.
             print("Received created event - %s." % event.src_path)
             im_list = [event.src_path]
-            segment(im_list)
+            k = event.src_path.rfind("/")
+            print("filename: "+ event.src_path[k+1:])
+            segment(im_list, event.src_path[k+1:])
             print ("segmentation done and saved")
 
         # elif event.event_type == 'modified':
