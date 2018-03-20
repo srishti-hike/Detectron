@@ -33,7 +33,9 @@ from flask import send_from_directory
 
 app = Flask(__name__)
 
-input_file_path = "/mnt/api_files/input/"
+INPUT_FILE_PATH = "/mnt/api_files/input/"
+GS_BUCKET = "gs://hike_datascience/srishti/"
+OUTPUT_FILE_EXTENSION = '_output.png'
 
 def parse_args():
     parser = argparse.ArgumentParser(description='End-to-end inference')
@@ -105,8 +107,8 @@ def upload_file_done():
     if request.method == 'POST':
         f = request.files['file']
         key = uuid.uuid4()
-        f.save(input_file_path + secure_filename(str(key) + '.jpg'))
-        return 'file uploaded successfully with UUID : '+ str(key)
+        f.save(INPUT_FILE_PATH + secure_filename(str(key) + '.jpg'))
+        return 'file uploaded successfully with UUID : '+ GS_BUCKET + str(key) + OUTPUT_FILE_EXTENSION
 
 if __name__ == '__main__':
       app.run(host='0.0.0.0', port=8000)

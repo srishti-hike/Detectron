@@ -36,6 +36,8 @@ cv2.ocl.setUseOpenCL(False)
 MILLISECONDS_IN_SECOND= 1000.0
 DIRECTORY_TO_WATCH = "/mnt/api_files/input/"
 DIRECTORY_TO_WRITE = "/mnt/api_files/output/"
+GS_BUCKET = "gs://hike_datascience/srishti/"
+OUTPUT_FILE_EXTENSION = '_output.png'
 
 def parse_args():
     parser = argparse.ArgumentParser(description='End-to-end inference')
@@ -121,8 +123,10 @@ def segment(im_list, filename):
             if classes[index] == args.class_label and not found:
                 logger.info('Writing output file to: {}'.format(str(i)))
                 # cv2.imwrite(args.output_dir + '/' + str(i) + '_' + args.class_label + '_' + `index` + ".png", value)
-                cv2.imwrite(DIRECTORY_TO_WRITE +filename.rstrip(".jpg") + '_output.png', value)
-                cmd = "gsutil cp " + DIRECTORY_TO_WRITE + filename.rstrip(".jpg") + '_output.png' + " gs://hike_datascience/srishti/"
+                cv2.imwrite(DIRECTORY_TO_WRITE +filename.rstrip(".jpg") + OUTPUT_FILE_EXTENSION, value)
+                cmd = "gsutil cp " + DIRECTORY_TO_WRITE + filename.rstrip(".jpg") + OUTPUT_FILE_EXTENSION + " " + GS_BUCKET
+                returned_value = os.system(cmd)
+                print("written file to gcs: ")
                 found = True
 
 class Watcher:
