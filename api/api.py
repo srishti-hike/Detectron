@@ -34,7 +34,7 @@ from flask import send_from_directory
 app = Flask(__name__)
 
 INPUT_FILE_PATH = "/mnt/api_files/input/"
-GS_BUCKET = "gs://hike_datascience/srishti/"
+GS_BUCKET = "gs://microapps-175405.appspot.com/srishti/"
 OUTPUT_FILE_EXTENSION = '_output.png'
 
 def parse_args():

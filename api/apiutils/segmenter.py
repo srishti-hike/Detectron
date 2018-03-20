@@ -36,7 +36,7 @@ cv2.ocl.setUseOpenCL(False)
 MILLISECONDS_IN_SECOND= 1000.0
 DIRECTORY_TO_WATCH = "/mnt/api_files/input/"
 DIRECTORY_TO_WRITE = "/mnt/api_files/output/"
-GS_BUCKET = "gs://hike_datascience/srishti/"
+GS_BUCKET = "gs://microapps-175405.appspot.com/srishti/"
 OUTPUT_FILE_EXTENSION = '_output.png'
 
 def parse_args():
