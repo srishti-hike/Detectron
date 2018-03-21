@@ -105,7 +105,7 @@ def segment(im_list, filename):
                 ' \ Note: inference on the first image will be slower than the '
                 'rest (caches and auto-tuning need to warm up)'
             )
-        segmented_images, classes, scores = vis_utils.segmented_images(
+        segmented_images, classes, scores, segmented_binary_masks = vis_utils.segmented_images(
             im,
             im_name,
             args.output_dir,

@@ -110,6 +110,17 @@ def vis_mask(img, mask, col, alpha=0.4, show_border=True, border_thick=1):
 
     return img.astype(np.uint8)
 
+def vis_binary_mask(img, mask):
+    """ Visualizes a single binary black and white mask """
+    img_test = np.zeros(img.shape)
+    idx = np.nonzero(mask)
+    img_test[idx[0], idx[1], :] = 255
+
+    return img_test.astype(np.uint8)
+
+def add_sticker_border(img, contours):
+    """ Draw border around image as specified by sk for stickers"""
+    cv2.drawContours(img, contours, )
 
 def vis_class(img, pos, class_str, font_scale=0.35):
     """Visualizes the class."""
@@ -494,6 +505,8 @@ def segmented_images(
     segmented_images = []
     segmented_classes = []
     segmented_scores = []
+    segmented_binary_masks = []
+
     for i in sorted_inds:
         bbox = boxes[i, :4]
         score = boxes[i, -1]
@@ -509,17 +522,28 @@ def segmented_images(
             w_ratio = .4
             e = masks[:, :, i]
 
+            # testing code
+            im_test2 = vis_binary_mask(im, masks[..., i])
+            cv2.imwrite('/home/srishti/testMaskIMG2_' + str(i) + '.png', im_test2)
+
             for channel in range(3):
                 img[:,:, channel] = im[:,:, channel] * e[:,:]
+
             _, contour, hier = cv2.findContours(
                 e.copy(), cv2.RETR_CCOMP, cv2.CHAIN_APPROX_NONE)
+
             for c in contour:
                 x, y, w, h = cv2.boundingRect(c)
                 img_countour = np.zeros([h, w, 3])
+                img_countour_bin = np.zeros([h, w, 3])
+
                 for channel in range(3):
                     img_countour[:, :, channel] = img[y:h + y, x:w + x, channel]
+                    img_countour_bin[:, :, channel] = im_test2[y:h + y, x:w + x, channel]
+
                 segmented_images.insert(len(segmented_images), img_countour)
+                segmented_binary_masks.index(len(segmented_binary_masks), img_countour_bin)
                 segmented_classes.insert(len(segmented_classes), dataset.classes[classes[i]])
                 segmented_scores.insert(len(segmented_scores), score)
-    return segmented_images, segmented_classes, segmented_scores
+    return segmented_images, segmented_classes, segmented_scores, segmented_binary_masks
 
