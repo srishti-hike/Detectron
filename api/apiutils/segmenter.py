@@ -119,15 +119,18 @@ def segment(im_list, filename):
             kp_thresh=2
         )
         found = False
-        for index, value in enumerate(segmented_images):
-            if classes[index] == args.class_label and not found:
-                logger.info('Writing output file to: {}'.format(str(i)))
-                # cv2.imwrite(args.output_dir + '/' + str(i) + '_' + args.class_label + '_' + `index` + ".png", value)
-                cv2.imwrite(DIRECTORY_TO_WRITE +filename.rstrip(".jpg") + OUTPUT_FILE_EXTENSION, value)
-                cmd = "gsutil cp " + DIRECTORY_TO_WRITE + filename.rstrip(".jpg") + OUTPUT_FILE_EXTENSION + " " + GS_BUCKET
-                returned_value = os.system(cmd)
-                print("written file to gcs: ")
-                found = True
+        if len(segmented_images) > 0:
+            for index, value in enumerate(segmented_images):
+                if classes[index] == args.class_label and not found:
+                    logger.info('Writing output file to: {}'.format(str(i)))
+                    # cv2.imwrite(args.output_dir + '/' + str(i) + '_' + args.class_label + '_' + `index` + ".png", value)
+                    cv2.imwrite(DIRECTORY_TO_WRITE +filename.rstrip(".jpg") + OUTPUT_FILE_EXTENSION, value)
+                    cmd = "gsutil cp " + DIRECTORY_TO_WRITE + filename.rstrip(".jpg") + OUTPUT_FILE_EXTENSION + " " + GS_BUCKET
+                    returned_value = os.system(cmd)
+                    logger.info("written file to gcs: "+ str(returned_value))
+                    found = True
+
+        return found
 
 class Watcher:
 
@@ -161,13 +164,8 @@ class Handler(FileSystemEventHandler):
             print("Received created event - %s." % event.src_path)
             im_list = [event.src_path]
             k = event.src_path.rfind("/")
-            print("filename: "+ event.src_path[k+1:])
-            segment(im_list, event.src_path[k+1:])
-            print ("segmentation done and saved")
-
-        # elif event.event_type == 'modified':
-        #     # Taken any action here when a file is modified.
-        #     print("Received modified event - %s." % event.src_path)
+            found = segment(im_list, event.src_path[k+1:])
+            logger.info("segmentation done and saved: " + str(found))
 
 
 # Global variables on start
