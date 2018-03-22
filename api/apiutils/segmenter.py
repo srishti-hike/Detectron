@@ -84,6 +84,16 @@ def parse_args():
         sys.exit(1)
     return parser.parse_args()
 
+def write_to_local(filename, filevalue):
+    cv2.imwrite(filename, filevalue)
+
+
+def write_to_gcs(filename, filevalue):
+    cmd = "gsutil cp " + filename + " " + GS_BUCKET
+    returned_value = os.system(cmd)
+    return returned_value
+
+
 def segment(im_list, filename):
     for i, im_name in enumerate(im_list):
         out_name = os.path.join(
@@ -105,7 +115,7 @@ def segment(im_list, filename):
                 ' \ Note: inference on the first image will be slower than the '
                 'rest (caches and auto-tuning need to warm up)'
             )
-        segmented_images, classes, scores, segmented_binary_masks = vis_utils.segmented_images(
+        segmented_images, classes, scores = vis_utils.segmented_images(
             im,
             im_name,
             args.output_dir,
@@ -122,15 +132,15 @@ def segment(im_list, filename):
         if len(segmented_images) > 0:
             for index, value in enumerate(segmented_images):
                 if classes[index] == args.class_label and not found:
-                    logger.info('Writing output file to: {}'.format(str(i)))
-                    # cv2.imwrite(args.output_dir + '/' + str(i) + '_' + args.class_label + '_' + `index` + ".png", value)
-                    cv2.imwrite(DIRECTORY_TO_WRITE +filename.rstrip(".jpg") + OUTPUT_FILE_EXTENSION, value)
-                    cmd = "gsutil cp " + DIRECTORY_TO_WRITE + filename.rstrip(".jpg") + OUTPUT_FILE_EXTENSION + " " + GS_BUCKET
-                    returned_value = os.system(cmd)
+                    output_filename = DIRECTORY_TO_WRITE + filename.rstrip(".jpg") + OUTPUT_FILE_EXTENSION
+                    write_to_local(output_filename, value)
+                    returned_value = write_to_gcs(output_filename, value)
                     logger.info("written file to gcs: "+ str(returned_value))
                     found = True
 
         return found
+
+
 
 class Watcher:
 

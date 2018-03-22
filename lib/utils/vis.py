@@ -542,8 +542,8 @@ def segmented_images(
                     img_countour_bin[:, :, channel] = im_test2[y:h + y, x:w + x, channel]
 
                 segmented_images.insert(len(segmented_images), img_countour)
-                segmented_binary_masks.index(len(segmented_binary_masks), img_countour_bin)
+                # segmented_binary_masks.index(len(segmented_binary_masks), img_countour_bin)
                 segmented_classes.insert(len(segmented_classes), dataset.classes[classes[i]])
                 segmented_scores.insert(len(segmented_scores), score)
-    return segmented_images, segmented_classes, segmented_scores, segmented_binary_masks
+    return segmented_images, segmented_classes, segmented_scores
 
