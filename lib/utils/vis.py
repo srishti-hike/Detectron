@@ -116,14 +116,16 @@ def vis_binary_mask(img, mask):
     idx = np.nonzero(mask)
     img_test[idx[0], idx[1], :] = 255
 
-    return img_test.astype(np.uint8)
+    return img_test[:, :, 0]
 
-def add_sticker_border(segmented_img, styled_img, mask, contour, border_thick =5):
+def add_sticker_border(segmented_img, styled_img, mask, border_thick =5):
     """ Draw border around image as specified by sk for stickers"""
     # _, contours, _ = cv2.findContours(
     #     mask, cv2.RETR_CCOMP, cv2.CHAIN_APPROX_NONE)
     print(styled_img.shape)
-    cv2.drawContours(styled_img, contour, -1, _WHITE, border_thick, cv2.LINE_AA)
+    _, contours, _ = cv2.findContours(
+        mask.copy(), cv2.RETR_CCOMP, cv2.CHAIN_APPROX_NONE)
+    cv2.drawContours(styled_img, contours, -1, _WHITE, border_thick, cv2.LINE_AA)
     return styled_img.astype(np.uint8)
 
 def vis_class(img, pos, class_str, font_scale=0.35):
@@ -528,8 +530,8 @@ def segmented_images(
             e = masks[:, :, i]
 
             # testing code
-            im_seg_mask = vis_binary_mask(im, masks[..., i])
-            cv2.imwrite('/home/srishti/testMaskIMG2_' + str(i) + '.png', im_seg_mask)
+            # im_seg_mask = vis_binary_mask(im, masks[..., i])
+            # cv2.imwrite('/home/srishti/testMaskIMG2_' + str(i) + '.png', im_seg_mask)
 
             for channel in range(3):
                 img[:,:, channel] = im[:,:, channel] * e[:,:]
@@ -540,16 +542,17 @@ def segmented_images(
             for c in contour:
                 x, y, w, h = cv2.boundingRect(c)
                 img_countour = np.zeros([h, w, 3])
-                img_countour_bin = np.zeros([h, w, 3])
+                img_countour_bin = np.zeros([h, w])
 
                 for channel in range(3):
                     img_countour[:, :, channel] = img[y:h + y, x:w + x, channel]
-                    img_countour_bin[:, :, channel] = im_seg_mask[y:h + y, x:w + x, channel]
+
+                img_countour_bin[:, :] = e[y:h + y, x:w + x]
 
                 segmented_images.insert(len(segmented_images), img_countour)
                 segmented_binary_masks.insert(len(segmented_binary_masks), img_countour_bin)
                 segmented_classes.insert(len(segmented_classes), dataset.classes[classes[i]])
                 segmented_scores.insert(len(segmented_scores), score)
-                contours.insert(len(contours), c)
-    return segmented_images, segmented_classes, segmented_scores, segmented_binary_masks, contours
+                # contours.insert(len(contours), c)
+    return segmented_images, segmented_classes, segmented_scores, segmented_binary_masks
 

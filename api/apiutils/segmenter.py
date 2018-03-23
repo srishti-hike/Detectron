@@ -119,7 +119,7 @@ def segment(im_list, filename):
                 ' \ Note: inference on the first image will be slower than the '
                 'rest (caches and auto-tuning need to warm up)'
             )
-        segmented_images, classes, scores, segmented_binary_masks, contours = vis_utils.segmented_images(
+        segmented_images, classes, scores, segmented_binary_masks = vis_utils.segmented_images(
             im,
             im_name,
             args.output_dir,
@@ -138,12 +138,11 @@ def segment(im_list, filename):
                 if classes[index] == args.class_label and not found:
                     found = True
                     bin_mask = segmented_binary_masks[index]
-                    contour = contours[index]
-                    return found,  value, bin_mask, contour
+                    return found,  value, bin_mask
 
         return found, "", "", ""
 
-def style_transfer(input_file_path, input_file_name, mask, contour):
+def style_transfer(input_file_path, input_file_name, mask):
     logger.info("in function style_transfer")
     tmp_file_path = input_file_path
     output_file_name = input_file_name.rstrip(".png") + "styled.png"
@@ -161,7 +160,7 @@ def style_transfer(input_file_path, input_file_name, mask, contour):
 
     img = cv2.imread(input_file_path + input_file_name)
     styled_img = cv2.imread(tmp_file_path + output_file_name)
-    img_final = vis_utils.add_sticker_border(img, styled_img, mask, contour)
+    img_final = vis_utils.add_sticker_border(img, styled_img, mask)
 
     return returned_val, DIRECTORY_TO_WRITE,  output_file_name, img_final
 
@@ -196,7 +195,7 @@ class Handler(FileSystemEventHandler):
             im_list = [event.src_path]
             k = event.src_path.rfind("/")
             original_filename = event.src_path[k+1:]
-            found, filevalue, binmask_value, contour = segment(im_list, event.src_path[k+1:])
+            found, filevalue, binmask_value = segment(im_list, event.src_path[k+1:])
             style = True
             if found:
                 gcs_filename = original_filename.rstrip(".jpg") + OUTPUT_FILE_EXTENSION
@@ -204,7 +203,7 @@ class Handler(FileSystemEventHandler):
                 if style:
                     tmp_local_file = DIRECTORY_TEMP + original_filename.rstrip(".jpg") + "segmented.png"
                     write_to_local(tmp_local_file, filevalue)
-                    returned_value, output_file_path, output_file_name, output_file_value = style_transfer(DIRECTORY_TEMP, original_filename.rstrip(".jpg") + "segmented.png", binmask_value, contour)
+                    returned_value, output_file_path, output_file_name, output_file_value = style_transfer(DIRECTORY_TEMP, original_filename.rstrip(".jpg") + "segmented.png", binmask_value)
                     write_to_local(output_file_path+output_file_name, output_file_value)
                     write_to_gcs(output_file_path + output_file_name, gcs_filename)
                 else:
