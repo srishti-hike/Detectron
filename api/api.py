@@ -17,6 +17,9 @@ CURL_PATH = "https://storage.googleapis.com/microapps-175405.appspot.com/srishti
 OUTPUT_FILE_EXTENSION = '_output.png'
 STICKER_SELFIE_HIT = "sticker"
 
+
+INPUT_VIDEO_PATH = "/mnt/api_files/video/input"
+
 @app.route('/')
 def hello_world():
     return 'Hello, World!'
@@ -58,6 +61,7 @@ def upload_video():
     if request.method == 'POST':
         f = request.files['file']
         filename = secure_filename(f.filename)
+        f.save(INPUT_VIDEO_PATH + secure_filename(f.filename))
         return filename
 
 if __name__ == '__main__':
