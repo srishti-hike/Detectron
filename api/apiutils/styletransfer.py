@@ -2,10 +2,13 @@ import cv2
 import numpy as np
 import os
 import utils.vis as vis_utils
+import utils.logging
 
 DIRECTORY_TO_WATCH = "/mnt/api_files/input/"
 DIRECTORY_TEMP = "/mnt/api_files/tmp/"
 DIRECTORY_TO_WRITE = "/mnt/api_files/output/"
+utils.logging.setup_logging(__name__)
+logger = logging.getLogger(__name__)
 
 def adjust_gamma(image, gamma=1.0):
     # build a lookup table mapping the pixel values [0, 255] to
@@ -34,13 +37,13 @@ def preProcessing(gammaImg):
 def style_transfer(input_file_path, input_file_name):
     tmp_file_path = input_file_path
     output_file_name = input_file_name.rstrip(".png") + "styled.png"
-    print("calling style transfer model")
+    logger.info("calling style transfer model")
     returned_val = os.system("cd /mnt/fast-style-transfer; "
                              +"python --checkpoint /mnt/fast-style-transfer/checkpoints/johnny2 --in-path"
                              + input_file_path + input_file_name + " --out-path " + tmp_file_path + output_file_name
                              + " --device '/gpu:1'; cd /mnt/Detectron")
 
-    print("drawing border")
+    logger.info("drawing border")
     img = cv2.imread(input_file_path + input_file_name)
     styled_img = cv2.imread(tmp_file_path + output_file_name)
     img_final = vis_utils.add_sticker_border(img, styled_img)
