@@ -27,6 +27,7 @@ import utils.c2 as c2_utils
 import utils.logging
 import utils.vis as vis_utils
 import utils.segms as segms
+import styletransfer
 
 c2_utils.import_detectron_ops()
 # OpenCL may be enabled by default in OpenCV3; disable it because it's not
@@ -35,6 +36,7 @@ cv2.ocl.setUseOpenCL(False)
 
 MILLISECONDS_IN_SECOND= 1000.0
 DIRECTORY_TO_WATCH = "/mnt/api_files/input/"
+DIRECTORY_TEMP = "/mnt/api_files/tmp/"
 DIRECTORY_TO_WRITE = "/mnt/api_files/output/"
 GS_BUCKET = "gs://microapps-175405.appspot.com/srishti/"
 OUTPUT_FILE_EXTENSION = '_output.png'
@@ -88,10 +90,12 @@ def write_to_local(filename, filevalue):
     cv2.imwrite(filename, filevalue)
 
 
-def write_to_gcs(filename, filevalue):
-    cmd = "gsutil cp " + filename + " " + GS_BUCKET
+def write_to_gcs(local_filepath, gcs_filename):
+    cmd = "gsutil cp " + local_filepath + " " + GS_BUCKET + gcs_filename
     returned_value = os.system(cmd)
+    logger.info("written to gcs: " + local_filepath + ", returned value: "+ str(returned_value))
     return returned_value
+
 
 
 def segment(im_list, filename):
@@ -132,19 +136,12 @@ def segment(im_list, filename):
         if len(segmented_images) > 0:
             for index, value in enumerate(segmented_images):
                 if classes[index] == args.class_label and not found:
-                    output_filename = DIRECTORY_TO_WRITE + filename.rstrip(".jpg") + OUTPUT_FILE_EXTENSION
-                    write_to_local(output_filename, value)
-                    returned_value = write_to_gcs(output_filename, value)
-                    logger.info("written file to gcs: "+ str(returned_value))
                     found = True
+                    return found,  value
 
-        return found
-
-
+        return found, ""
 
 class Watcher:
-
-
     def __init__(self):
         self.observer = Observer()
 
@@ -163,7 +160,6 @@ class Watcher:
 
 
 class Handler(FileSystemEventHandler):
-
     @staticmethod
     def on_any_event(event):
         if event.is_directory:
@@ -174,12 +170,24 @@ class Handler(FileSystemEventHandler):
             print("Received created event - %s." % event.src_path)
             im_list = [event.src_path]
             k = event.src_path.rfind("/")
-            found = segment(im_list, event.src_path[k+1:])
-            logger.info("segmentation done and saved: " + str(found))
+            original_filename = event.src_path[k+1:]
+            found, filevalue = segment(im_list, event.src_path[k+1:])
+            style = True
+            if found:
+                gcs_filename = original_filename.rstrip(".jpg") + OUTPUT_FILE_EXTENSION
+                final_local_file = DIRECTORY_TO_WRITE + original_filename.rstrip(".jpg") + OUTPUT_FILE_EXTENSION
+                if style:
+                    tmp_local_file = DIRECTORY_TEMP + original_filename.rstrip(".jpg") + "segmented.png"
+                    write_to_local(tmp_local_file, filevalue)
+                    returned_value, output_file_path, output_file_name = styletransfer.style_transfer(DIRECTORY_TEMP, original_filename.rstrip(".jpg") + "segmented.png")
+                    write_to_gcs(output_file_path + output_file_name, gcs_filename)
+                else:
+                    write_to_local(final_local_file, filevalue)
+                    write_to_gcs(final_local_file, gcs_filename)
+            logger.info("segmentation done and saved: " + str(gcs_filename))
 
 
 # Global variables on start
-
 workspace.GlobalInit(['caffe2', '--caffe2_log_level=0'])
 utils.logging.setup_logging(__name__)
 args = parse_args()
