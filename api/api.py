@@ -32,5 +32,13 @@ def upload_file_done():
         f.save(INPUT_FILE_PATH + secure_filename(str(key) + '.jpg'))
         return 'file uploaded successfully. Hit this to see results: : '+ CURL_PATH + str(key) + OUTPUT_FILE_EXTENSION
 
+@app.route('/sticker', methods = ['POST'])
+def upload_style_transfer_input():
+    if request.method == 'POST':
+        f = request.files['file']
+        key = uuid.uuid4()
+        f.save(INPUT_FILE_PATH + secure_filename(str(key)) + "sticker.jpg")
+        return CURL_PATH + str(key) + ".png"
+
 if __name__ == '__main__':
       app.run(host='0.0.0.0', port=8000)
