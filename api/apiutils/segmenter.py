@@ -192,7 +192,7 @@ class Handler(FileSystemEventHandler):
             k = event.src_path.rfind("/")
             original_filename = event.src_path[k+1:]
             found, filevalue = segment(im_list, event.src_path[k+1:])
-            style = True
+            style = False
             if found:
                 gcs_filename = original_filename.rstrip(".jpg") + OUTPUT_FILE_EXTENSION
                 final_local_file = DIRECTORY_TO_WRITE + original_filename.rstrip(".jpg") + OUTPUT_FILE_EXTENSION
