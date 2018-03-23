@@ -129,8 +129,12 @@ def add_sticker_border(segmented_img, styled_img, mask, border_thick =8):
     _, contours, _ = cv2.findContours(
         mask.copy(), cv2.RETR_CCOMP, cv2.CHAIN_APPROX_NONE)
 
-    cv2.drawContours(styled_img, contours, -1, _WHITE, 8, cv2.LINE_AA)
-    cv2.drawContours(styled_img, contours, -1, _DARKGREY, 1, cv2.LINE_AA)
+    for c in contours:
+        epsilon = 0.003*cv2.arcLength(c,True)
+        approx = cv2.approxPolyDP(c,epsilon,True)
+
+        cv2.drawContours(styled_img, [approx], -1, (255,204, 204, 204), 10)
+        cv2.drawContours(styled_img, [approx], -1, (255,255, 255, 255), 6)
 
     return styled_img.astype(np.uint8)
 
