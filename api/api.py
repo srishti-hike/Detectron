@@ -21,6 +21,10 @@ STICKER_SELFIE_HIT = "sticker"
 def hello_world():
     return 'Hello, World!'
 
+@app.route('/ping')
+def ping():
+    return 'Pong'
+
 @app.route('/upload')
 def upload_file():
     return render_template('uploader.html')

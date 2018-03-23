@@ -118,10 +118,10 @@ def vis_binary_mask(img, mask):
 
     return img_test.astype(np.uint8)
 
-def add_sticker_border(segmented_img, styled_img, border_thick =1):
+def add_sticker_border(segmented_img, styled_img, mask, border_thick =1):
     """ Draw border around image as specified by sk for stickers"""
     _, contours, _ = cv2.findContours(
-        segmented_img, cv2.RETR_CCOMP, cv2.CHAIN_APPROX_NONE)
+        mask, cv2.RETR_CCOMP, cv2.CHAIN_APPROX_NONE)
     cv2.drawContours(styled_img, contours, -1, _WHITE, border_thick, cv2.LINE_AA)
     return styled_img.astype(np.uint8)
 
@@ -545,8 +545,8 @@ def segmented_images(
                     img_countour_bin[:, :, channel] = im_seg_mask[y:h + y, x:w + x, channel]
 
                 segmented_images.insert(len(segmented_images), img_countour)
-                # segmented_binary_masks.index(len(segmented_binary_masks), img_countour_bin)
+                segmented_binary_masks.insert(len(segmented_binary_masks), img_countour_bin)
                 segmented_classes.insert(len(segmented_classes), dataset.classes[classes[i]])
                 segmented_scores.insert(len(segmented_scores), score)
-    return segmented_images, segmented_classes, segmented_scores
+    return segmented_images, segmented_classes, segmented_scores, segmented_binary_masks
 
