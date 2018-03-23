@@ -145,9 +145,9 @@ def style_transfer(input_file_path, input_file_name):
     logger.info("in function style_transfer")
     tmp_file_path = input_file_path
     output_file_name = input_file_name.rstrip(".png") + "styled.png"
-    logger.info("calling style transfer model")
+    logger.info("calling style transfer model, output file in tmp folder: " + output_file_name)
     returned_val = os.system("cd /mnt/fast-style-transfer; "
-                             +"python --checkpoint /mnt/fast-style-transfer/checkpoints/johnny2 --in-path"
+                             +"python evaluate.py --checkpoint /mnt/fast-style-transfer/checkpoints/johnny2 --in-path"
                              + input_file_path + input_file_name + " --out-path " + tmp_file_path + output_file_name
                              + " --device '/gpu:1'; cd /mnt/Detectron")
 
