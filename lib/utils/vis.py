@@ -123,6 +123,8 @@ def add_sticker_border(segmented_img, styled_img, mask, border_thick =5):
     # _, contours, _ = cv2.findContours(
     #     mask, cv2.RETR_CCOMP, cv2.CHAIN_APPROX_NONE)
     print(styled_img.shape)
+
+    mask = mask.astype(np.int32)
     _, contours, _ = cv2.findContours(
         mask.copy(), cv2.RETR_CCOMP, cv2.CHAIN_APPROX_NONE)
     cv2.drawContours(styled_img, contours, -1, _WHITE, border_thick, cv2.LINE_AA)
