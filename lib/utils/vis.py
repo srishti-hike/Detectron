@@ -122,6 +122,7 @@ def add_sticker_border(segmented_img, styled_img, mask, contour, border_thick =1
     """ Draw border around image as specified by sk for stickers"""
     # _, contours, _ = cv2.findContours(
     #     mask, cv2.RETR_CCOMP, cv2.CHAIN_APPROX_NONE)
+    print(styled_img.shape)
     cv2.drawContours(styled_img, contour, -1, _WHITE, border_thick, cv2.LINE_AA)
     return styled_img.astype(np.uint8)
 

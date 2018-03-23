@@ -154,6 +154,9 @@ def style_transfer(input_file_path, input_file_name, mask, contour):
                              + " --device '/gpu:1'; cd /mnt/Detectron")
 
     logger.info("drawing border")
+    logger.info("segmented image path: "+ tmp_file_path + output_file_name)
+    logger.info("styled image path: "+ tmp_file_path + output_file_name)
+
     img = cv2.imread(input_file_path + input_file_name)
     styled_img = cv2.imread(tmp_file_path + output_file_name)
     img_final = vis_utils.add_sticker_border(img, styled_img, mask, contour)
