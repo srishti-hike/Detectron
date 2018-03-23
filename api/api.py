@@ -18,7 +18,7 @@ OUTPUT_FILE_EXTENSION = '_output.png'
 STICKER_SELFIE_HIT = "sticker"
 
 
-INPUT_VIDEO_PATH = "/mnt/api_files/video/input"
+INPUT_VIDEO_PATH = "/mnt/api_files/video/input/"
 
 @app.route('/')
 def hello_world():
