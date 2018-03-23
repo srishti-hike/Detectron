@@ -251,21 +251,22 @@ class Handler(FileSystemEventHandler):
 
 
             # Image segmentation
-            found, filevalue, binmask_value = segment(im_list, event.src_path[k+1:])
-            style = STICKER_SELFIE_HIT in original_filename
-            if found:
-                gcs_filename = original_filename.rstrip(".jpg") + OUTPUT_FILE_EXTENSION
-                final_local_file = DIRECTORY_TO_WRITE + original_filename.rstrip(".jpg") + OUTPUT_FILE_EXTENSION
-                if style:
-                    tmp_local_file = DIRECTORY_TEMP + original_filename.rstrip(".jpg") + "segmented.png"
-                    write_to_local(tmp_local_file, filevalue)
-                    returned_value, output_file_path, output_file_name, output_file_value = style_transfer(DIRECTORY_TEMP, original_filename.rstrip(".jpg") + "segmented.png", binmask_value)
-                    write_to_local(output_file_path+output_file_name, output_file_value)
-                    write_to_gcs(output_file_path + output_file_name, gcs_filename)
-                else:
-                    write_to_local(final_local_file, filevalue)
-                    write_to_gcs(final_local_file, gcs_filename)
-            logger.info("segmentation done and saved: " + str(gcs_filename))
+            else:
+                found, filevalue, binmask_value = segment(im_list, event.src_path[k+1:])
+                style = STICKER_SELFIE_HIT in original_filename
+                if found:
+                    gcs_filename = original_filename.rstrip(".jpg") + OUTPUT_FILE_EXTENSION
+                    final_local_file = DIRECTORY_TO_WRITE + original_filename.rstrip(".jpg") + OUTPUT_FILE_EXTENSION
+                    if style:
+                        tmp_local_file = DIRECTORY_TEMP + original_filename.rstrip(".jpg") + "segmented.png"
+                        write_to_local(tmp_local_file, filevalue)
+                        returned_value, output_file_path, output_file_name, output_file_value = style_transfer(DIRECTORY_TEMP, original_filename.rstrip(".jpg") + "segmented.png", binmask_value)
+                        write_to_local(output_file_path+output_file_name, output_file_value)
+                        write_to_gcs(output_file_path + output_file_name, gcs_filename)
+                    else:
+                        write_to_local(final_local_file, filevalue)
+                        write_to_gcs(final_local_file, gcs_filename)
+                logger.info("segmentation done and saved: " + str(gcs_filename))
 
 
 
