@@ -122,11 +122,17 @@ def vis_binary_mask(img, mask):
 def add_sticker_border(segmented_img, styled_img, mask, border_thick =8):
     """ Draw border around image as specified by sk for stickers"""
 
+    cv2.imwrite("/home/srishti/segmented.png", segmented_img)
+    cv2.imwrite("/home/srishti/styled.png",styled_img)
+    cv2.imwrite("/home/srishti/mask_bin.png")
+    im_mask = vis_binary_mask(styled_img, mask)
+    cv2.imwrite("/home/srishti/binmask.png")
+
     print(styled_img.shape)
     styled_img = cv2.cvtColor(styled_img, cv2.COLOR_RGB2BGRA)
 
-    for x in mask:
-        for y in mask[x]:
+    for x in xrange(mask.shape[0]):
+        for y in xrange(mask.shape[1]):
             if mask[x,y] == 0:
                 styled_img[x,y] ==[0,0,0,0]
 
