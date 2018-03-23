@@ -61,7 +61,7 @@ def upload_video():
     if request.method == 'POST':
         f = request.files['file']
         filename = secure_filename(f.filename)
-        f.save(INPUT_VIDEO_PATH + secure_filename(f.filename))
+        f.save(INPUT_FILE_PATH + secure_filename(f.filename))
         return filename
 
 if __name__ == '__main__':

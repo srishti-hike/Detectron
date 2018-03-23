@@ -580,3 +580,61 @@ def segmented_images(
                 # contours.insert(len(contours), c)
     return segmented_images, segmented_classes, segmented_scores, segmented_binary_masks
 
+def segmented_images_in_original_image_size(
+        im, im_name, output_dir, boxes, segms=None, keypoints=None, thresh=0.9,
+        kp_thresh=2, dpi=200, box_alpha=0.0, dataset=None, show_class=False,
+        ext='pdf'):
+    """Extract segmented images."""
+    if not os.path.exists(output_dir):
+        os.makedirs(output_dir)
+
+    if isinstance(boxes, list):
+        boxes, segms, keypoints, classes = convert_from_cls_format(
+            boxes, segms, keypoints)
+
+    if boxes is None or boxes.shape[0] == 0 or max(boxes[:, 4]) < thresh:
+        return
+
+    if segms is not None:
+        masks = mask_util.decode(segms)
+
+    color_list = colormap(rgb=True) / 255
+
+    # Display in largest to smallest order to reduce occlusion
+    areas = (boxes[:, 2] - boxes[:, 0]) * (boxes[:, 3] - boxes[:, 1])
+    sorted_inds = np.argsort(-areas)
+
+    mask_color_id = 0
+    segmented_images = []
+    segmented_classes = []
+    segmented_scores = []
+    segmented_binary_masks = []
+    contours = []
+
+    for i in sorted_inds:
+        bbox = boxes[i, :4]
+        score = boxes[i, -1]
+        if score < thresh:
+            continue
+
+        # show mask
+        if segms is not None and len(segms) > i:
+            img = np.zeros(im.shape)
+            color_mask = color_list[mask_color_id % len(color_list), 0:3]
+            mask_color_id += 1
+
+            w_ratio = .4
+            e = masks[:, :, i]
+
+            for channel in range(3):
+                img[:,:, channel] = im[:,:, channel] * e[:,:]
+
+            _, contour, hier = cv2.findContours(
+                e.copy(), cv2.RETR_CCOMP, cv2.CHAIN_APPROX_NONE)
+            segmented_images.insert(len(segmented_images), img)
+            segmented_binary_masks.insert(len(segmented_binary_masks), e)
+            segmented_classes.insert(len(segmented_classes), dataset.classes[classes[i]])
+            segmented_scores.insert(len(segmented_scores), score)
+
+    return segmented_images, segmented_classes, segmented_scores, segmented_binary_masks
+

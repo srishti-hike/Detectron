@@ -14,6 +14,9 @@ import sys
 import time
 from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
+import moviepy
+from moviepy.editor import VideoFileClip
+from moviepy.editor import *
 
 from caffe2.python import workspace
 
@@ -165,6 +168,51 @@ def style_transfer(input_file_path, input_file_name, mask):
 
     return returned_val, DIRECTORY_TO_WRITE,  output_file_name, img_final
 
+def video_image_segment(im):
+    filename="random" #not being used by vis_utils.segmented_images
+
+    timers = defaultdict(Timer)
+    t = time.time()
+
+    with c2_utils.NamedCudaScope(0):
+        cls_boxes, cls_segms, cls_keyps = infer_engine.im_detect_all(
+            model, im, None, timers=timers
+        )
+    logger.info('Inference time: {:.3f}s'.format(time.time() - t))
+    for k, v in timers.items():
+        logger.info(' | {}: {:.3f}s'.format(k, v.average_time))
+
+    segmented_images, classes, scores, segmented_binary_masks = vis_utils.segmented_images_in_original_image_size(
+        im,
+        filename,
+        args.output_dir,
+        cls_boxes,
+        cls_segms,
+        cls_keyps,
+        dataset=dummy_coco_dataset,
+        box_alpha=0.3,
+        show_class=True,
+        thresh=0.7,
+        kp_thresh=2
+    )
+    found = False
+    if len(segmented_images) > 0:
+        for index, value in enumerate(segmented_images):
+            if classes[index] == args.class_label and not found:
+                found = True
+                bin_mask = segmented_binary_masks[index]
+                # return found, value, bin_mask
+                return value
+
+    logger.info(("PERSON NOT FOUND IN IMG!!!!!"))
+    return segmented_images[0]
+
+def video_processing(filepath, filename):
+    clip = VideoFileClip(filepath)
+    modified_video = clip.fl_image(video_image_segment)
+    modified_video.write_videofile("/home/srishti/outputvideo.mp4", audio=False);
+
+
 
 class Watcher:
     def __init__(self):
@@ -196,6 +244,13 @@ class Handler(FileSystemEventHandler):
             im_list = [event.src_path]
             k = event.src_path.rfind("/")
             original_filename = event.src_path[k+1:]
+
+            if ".mp4" in original_filename:
+                print ("need to proccess video")
+                video_processing(event.src_path, original_filename)
+
+
+            # Image segmentation
             found, filevalue, binmask_value = segment(im_list, event.src_path[k+1:])
             style = STICKER_SELFIE_HIT in original_filename
             if found:
@@ -211,6 +266,7 @@ class Handler(FileSystemEventHandler):
                     write_to_local(final_local_file, filevalue)
                     write_to_gcs(final_local_file, gcs_filename)
             logger.info("segmentation done and saved: " + str(gcs_filename))
+
 
 
 # Global variables on start
