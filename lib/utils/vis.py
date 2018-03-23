@@ -121,9 +121,15 @@ def vis_binary_mask(img, mask):
 
 def add_sticker_border(segmented_img, styled_img, mask, border_thick =8):
     """ Draw border around image as specified by sk for stickers"""
-    # _, contours, _ = cv2.findContours(
-    #     mask, cv2.RETR_CCOMP, cv2.CHAIN_APPROX_NONE)
+    
     print(styled_img.shape)
+    styled_img = cv2.cvtColor(styled_img, cv2.COLOR_RGB2BGRA)
+
+    for x in mask:
+        for y in mask[x]:
+            if mask[x,y] == 0:
+                styled_img[x,y] ==[0,0,0,0]
+
 
     mask = mask.astype(np.int32)
     _, contours, _ = cv2.findContours(
@@ -137,6 +143,18 @@ def add_sticker_border(segmented_img, styled_img, mask, border_thick =8):
         cv2.drawContours(styled_img, [approx], -1, (255,255, 255, 255), 6)
 
     return styled_img.astype(np.uint8)
+
+
+self.dummyImg = cv2.cvtColor(st, cv2.COLOR_RGB2BGRA)
+for x in xrange(self.img.shape[0]):
+            for y in xrange(self.img.shape[1]):
+                if overlay[x,y][2] == 255:
+                    self.dummyImg[x,y] = [0,0,0,0]
+                else :
+                    (b,g,r) = self.img[x,y]
+                    self.dummyImg[x,y] = [b,g,r,255]
+cv2.imshow('watershed', self.dummyImg)
+
 
 def vis_class(img, pos, class_str, font_scale=0.35):
     """Visualizes the class."""
