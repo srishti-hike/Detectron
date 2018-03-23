@@ -148,12 +148,14 @@ def style_transfer(input_file_path, input_file_name, mask, contour):
     tmp_file_path = input_file_path
     output_file_name = input_file_name.rstrip(".png") + "styled.png"
     logger.info("calling style transfer model, output file in tmp folder: " + output_file_name)
-    returned_val = os.system("cd /mnt/fast-style-transfer; "
-                             +"python evaluate.py --checkpoint /mnt/fast-style-transfer/checkpoints/johnny2 --in-path"
-                             + input_file_path + input_file_name + " --out-path " + tmp_file_path + output_file_name
-                             + " --device '/gpu:1'; cd /mnt/Detectron")
+    cmd = "cd /mnt/fast-style-transfer; " \
+          +"python evaluate.py --checkpoint /mnt/fast-style-transfer/checkpoints/johnny2 --in-path"\
+          + input_file_path + input_file_name + " --out-path " + tmp_file_path + output_file_name\
+          + " --device '/gpu:1'; cd /mnt/Detectron"
+    logger.info("running command: "+ cmd)
+    returned_val = os.system(cmd)
 
-    logger.info("drawing border")
+    logger.info("drawing border, returned value from style transfer: " + returned_val)
     logger.info("segmented image path: "+ tmp_file_path + output_file_name)
     logger.info("styled image path: "+ tmp_file_path + output_file_name)
 
