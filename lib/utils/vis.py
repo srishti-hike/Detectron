@@ -124,7 +124,7 @@ def add_sticker_border(segmented_img, styled_img, mask, border_thick =8):
 
     cv2.imwrite("/home/srishti/segmented.png", segmented_img)
     cv2.imwrite("/home/srishti/styled.png",styled_img)
-    cv2.imwrite("/home/srishti/mask_bin.png")
+    cv2.imwrite("/home/srishti/mask_bin.png", mask)
     im_mask = vis_binary_mask(styled_img, mask)
     cv2.imwrite("/home/srishti/binmask.png", im_mask)
 
