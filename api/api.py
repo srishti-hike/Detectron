@@ -45,5 +45,13 @@ def upload_style_transfer_input():
         f.save(INPUT_FILE_PATH + secure_filename(str(key)) + STICKER_SELFIE_HIT + ".jpg")
         return CURL_PATH + str(key) + STICKER_SELFIE_HIT + OUTPUT_FILE_EXTENSION
 
+@app.route('/potrait', methods = ['POST'])
+def upload_potraitsegmentation():
+    if request.method == 'POST':
+        f = request.files['file']
+        key = uuid.uuid4()
+        f.save(INPUT_FILE_PATH + secure_filename(str(key)) + ".jpg")
+        return CURL_PATH + str(key) + OUTPUT_FILE_EXTENSION
+
 if __name__ == '__main__':
       app.run(host='0.0.0.0', port=80)

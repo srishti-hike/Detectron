@@ -39,6 +39,7 @@ DIRECTORY_TEMP = "/mnt/api_files/tmp/"
 DIRECTORY_TO_WRITE = "/mnt/api_files/output/"
 GS_BUCKET = "gs://microapps-175405.appspot.com/srishti/"
 OUTPUT_FILE_EXTENSION = '_output.png'
+STICKER_SELFIE_HIT = "sticker"
 
 def parse_args():
     parser = argparse.ArgumentParser(description='End-to-end inference')
@@ -196,7 +197,7 @@ class Handler(FileSystemEventHandler):
             k = event.src_path.rfind("/")
             original_filename = event.src_path[k+1:]
             found, filevalue, binmask_value = segment(im_list, event.src_path[k+1:])
-            style = True
+            style = STICKER_SELFIE_HIT in original_filename
             if found:
                 gcs_filename = original_filename.rstrip(".jpg") + OUTPUT_FILE_EXTENSION
                 final_local_file = DIRECTORY_TO_WRITE + original_filename.rstrip(".jpg") + OUTPUT_FILE_EXTENSION
