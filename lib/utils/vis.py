@@ -118,7 +118,7 @@ def vis_binary_mask(img, mask):
 
     return img_test[:, :, 0]
 
-def add_sticker_border(segmented_img, styled_img, mask, border_thick =5):
+def add_sticker_border(segmented_img, styled_img, mask, border_thick =8):
     """ Draw border around image as specified by sk for stickers"""
     # _, contours, _ = cv2.findContours(
     #     mask, cv2.RETR_CCOMP, cv2.CHAIN_APPROX_NONE)

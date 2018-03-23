@@ -53,5 +53,12 @@ def upload_potraitsegmentation():
         f.save(INPUT_FILE_PATH + secure_filename(str(key)) + ".jpg")
         return CURL_PATH + str(key) + OUTPUT_FILE_EXTENSION
 
+@app.route('/video', methods = ['POST'])
+def upload_video():
+    if request.method == 'POST':
+        f = request.files['file']
+        filename = secure_filename(f.filename)
+        return filename
+
 if __name__ == '__main__':
       app.run(host='0.0.0.0', port=80)
