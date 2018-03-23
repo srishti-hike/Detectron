@@ -128,9 +128,9 @@ def add_sticker_border(segmented_img, styled_img, mask, border_thick =8):
     _, contours, _ = cv2.findContours(
         mask.copy(), cv2.RETR_CCOMP, cv2.CHAIN_APPROX_NONE)
 
-    final_im = mask * styled_img
-    cv2.drawContours(final_im, contours, -1, _WHITE, border_thick, cv2.LINE_AA)
-    return final_im.astype(np.uint8)
+    img2_fg = cv2.bitwise_and(styled_img, styled_img, mask=mask)
+    cv2.drawContours(img2_fg, contours, -1, _WHITE, border_thick, cv2.LINE_AA)
+    return img2_fg.astype(np.uint8)
 
 def vis_class(img, pos, class_str, font_scale=0.35):
     """Visualizes the class."""
