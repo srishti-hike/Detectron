@@ -31,15 +31,17 @@ def preProcessing(gammaImg):
   gammaImg = cv2.fastNlMeansDenoisingColored(gammaImg,None,10,10,7,21)
   return gammaImg
 
-def style_transfer(input_file_path, inpute_file_name):
+def style_transfer(input_file_path, input_file_name):
     tmp_file_path = input_file_path
-    output_file_name = inpute_file_name.rstrip(".png") + "styled.png"
+    output_file_name = input_file_name.rstrip(".png") + "styled.png"
+    print("calling style transfer model")
     returned_val = os.system("cd /mnt/fast-style-transfer; "
                              +"python --checkpoint /mnt/fast-style-transfer/checkpoints/johnny2 --in-path"
-                             + input_file_path + inpute_file_name + " --out-path " + tmp_file_path + output_file_name
+                             + input_file_path + input_file_name + " --out-path " + tmp_file_path + output_file_name
                              + " --device '/gpu:1'; cd /mnt/Detectron")
 
-    img = cv2.imread(input_file_path + inpute_file_name)
+    print("drawing border")
+    img = cv2.imread(input_file_path + input_file_name)
     styled_img = cv2.imread(tmp_file_path + output_file_name)
     img_final = vis_utils.add_sticker_border(img, styled_img)
 

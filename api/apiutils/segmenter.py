@@ -88,6 +88,7 @@ def parse_args():
 
 def write_to_local(filename, filevalue):
     cv2.imwrite(filename, filevalue)
+    logger.info("written to local: "+ filename)
 
 
 def write_to_gcs(local_filepath, gcs_filename):
