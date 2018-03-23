@@ -42,6 +42,7 @@ plt.rcParams['pdf.fonttype'] = 42  # For editing in Adobe Illustrator
 _GRAY = (218, 227, 218)
 _GREEN = (18, 127, 15)
 _WHITE = (255, 255, 255)
+_DARKGREY = (173, 173, 173)
 
 
 def kp_connections(keypoints):
@@ -128,9 +129,10 @@ def add_sticker_border(segmented_img, styled_img, mask, border_thick =8):
     _, contours, _ = cv2.findContours(
         mask.copy(), cv2.RETR_CCOMP, cv2.CHAIN_APPROX_NONE)
 
-    img2_fg = cv2.bitwise_and(styled_img, styled_img, mask=mask)
-    cv2.drawContours(img2_fg, contours, -1, _WHITE, border_thick, cv2.LINE_AA)
-    return img2_fg.astype(np.uint8)
+    cv2.drawContours(styled_img, contours, -1, _WHITE, 8, cv2.LINE_AA)
+    cv2.drawContours(styled_img, contours, -1, _DARKGREY, 1, cv2.LINE_AA)
+
+    return styled_img.astype(np.uint8)
 
 def vis_class(img, pos, class_str, font_scale=0.35):
     """Visualizes the class."""
