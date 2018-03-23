@@ -27,7 +27,7 @@ import utils.c2 as c2_utils
 import utils.logging
 import utils.vis as vis_utils
 import utils.segms as segms
-import styletransfer
+import utils.styletransfer as styletransfer
 
 c2_utils.import_detectron_ops()
 # OpenCL may be enabled by default in OpenCV3; disable it because it's not
