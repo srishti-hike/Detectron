@@ -155,7 +155,7 @@ def style_transfer(input_file_path, input_file_name, mask, contour):
     logger.info("running command: "+ cmd)
     returned_val = os.system(cmd)
 
-    logger.info("drawing border, returned value from style transfer: " + returned_val)
+    logger.info("drawing border, returned value from style transfer: " + str(returned_val))
     logger.info("segmented image path: "+ tmp_file_path + output_file_name)
     logger.info("styled image path: "+ tmp_file_path + output_file_name)
 
