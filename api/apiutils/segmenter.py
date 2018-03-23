@@ -27,7 +27,6 @@ import utils.c2 as c2_utils
 import utils.logging
 import utils.vis as vis_utils
 import utils.segms as segms
-import utils.styletransfer as styletransfer
 
 c2_utils.import_detectron_ops()
 # OpenCL may be enabled by default in OpenCV3; disable it because it's not
@@ -142,6 +141,26 @@ def segment(im_list, filename):
 
         return found, ""
 
+def style_transfer(input_file_path, input_file_name):
+    print("in function style_transfer")
+    tmp_file_path = input_file_path
+    output_file_name = input_file_name.rstrip(".png") + "styled.png"
+    print("calling style transfer model")
+    returned_val = os.system("cd /mnt/fast-style-transfer; "
+                             +"python --checkpoint /mnt/fast-style-transfer/checkpoints/johnny2 --in-path"
+                             + input_file_path + input_file_name + " --out-path " + tmp_file_path + output_file_name
+                             + " --device '/gpu:1'; cd /mnt/Detectron")
+
+    print("drawing border")
+    img = cv2.imread(input_file_path + input_file_name)
+    styled_img = cv2.imread(tmp_file_path + output_file_name)
+    img_final = vis_utils.add_sticker_border(img, styled_img)
+
+    cv2.imwrite(DIRECTORY_TO_WRITE + output_file_name, img_final)
+
+    return returned_val, DIRECTORY_TO_WRITE,  output_file_name
+
+
 class Watcher:
     def __init__(self):
         self.observer = Observer()
@@ -180,7 +199,7 @@ class Handler(FileSystemEventHandler):
                 if style:
                     tmp_local_file = DIRECTORY_TEMP + original_filename.rstrip(".jpg") + "segmented.png"
                     write_to_local(tmp_local_file, filevalue)
-                    returned_value, output_file_path, output_file_name = styletransfer.style_transfer(DIRECTORY_TEMP, original_filename.rstrip(".jpg") + "segmented.png")
+                    returned_value, output_file_path, output_file_name = style_transfer(DIRECTORY_TEMP, original_filename.rstrip(".jpg") + "segmented.png")
                     write_to_gcs(output_file_path + output_file_name, gcs_filename)
                 else:
                     write_to_local(final_local_file, filevalue)
