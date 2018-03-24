@@ -168,10 +168,10 @@ def style_transfer(input_file_path, input_file_name, mask):
 
     return returned_val, DIRECTORY_TO_WRITE,  output_file_name, img_final
 
-def video_processing(filepath, filename):
-    clip = VideoFileClip(filepath)
-    modified_video = clip.fl_image(video_image_segment)
-    modified_video.write_videofile("/home/srishti/outputvideo.mp4", audio=False);
+# def video_processing(filepath, filename):
+#     clip = VideoFileClip(filepath)
+#     modified_video = clip.fl_image(video_image_segment)
+#     modified_video.write_videofile("/home/srishti/outputvideo.mp4", audio=False);
 
 def video_image_segment(im):
     filename="random" #not being used by vis_utils.segmented_images
@@ -215,30 +215,26 @@ def video_processing_cv(filepath, filename, bg_filename):
     image_list = []
 
     bg_im = cv2.imread(VIDEO_BG_RESOURCES_DIRECTORY + bg_filename)
+
     vidcap = cv2.VideoCapture(filepath)
     success, image = vidcap.read()
-    image_list.insert(len(image_list), image)
     count = 0
-    print("success: " + str(success))
-    success = True
-    #
-    # (h, w) = image.shape[:2]
-    # fourcc = cv2.VideoWriter_fourcc('M', 'J', 'P', 'G')
-    #
-    # writer = cv2.VideoWriter("/home/srishti/testOut.avi", fourcc, 25,
-    #                          (w, h), True)
-    # writer.write(image)
 
-    while success:
-        success,image = vidcap.read()
-        if success == False:
-          break
-        image_list.insert(len(image_list), image)
+    success = True
+    while True:
+        if (success):
+            new_image = video_image_segment(image)
+            image_list.insert(len(image_list), new_image)
+        else:
+            break
+        success, image = vidcap.read()
         count += 1
 
     logger.info("Total number of frames in video: "+ str(count))
-    vid_utils.write_images(image_list)
-
+    new_video_filepath = DIRECTORY_TO_WRITE + "newVideo.mp4"
+    vid_utils.write_images(image_list, new_video_filepath )
+    write_to_gcs(new_video_filepath, gcs_filename="newVideo.mp4")
+    logger.info("Done writing")
 
 
 class Watcher:
@@ -254,7 +250,7 @@ class Watcher:
                 time.sleep(50.0/ MILLISECONDS_IN_SECOND)
         except:
             self.observer.stop()
-            print("Error")
+            logger.error("Error")
 
         self.observer.join()
 
@@ -267,14 +263,16 @@ class Handler(FileSystemEventHandler):
 
         elif event.event_type == 'created':
             # Take any action here when a file is first created.
-            print("Received created event - %s." % event.src_path)
+            logger.error("Received created event - %s." % event.src_path)
             im_list = [event.src_path]
             k = event.src_path.rfind("/")
             original_filename = event.src_path[k+1:]
 
             if ".mp4" in original_filename:
-                print ("need to proccess video")
+                logger.error("need to proccess video")
                 video_processing_cv(event.src_path, original_filename, "sky_news.jpg")
+                logger.error("done mp4 processing")
+
 
 
             # Image segmentation

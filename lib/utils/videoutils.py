@@ -12,12 +12,16 @@ STICKER_SELFIE_HIT = "sticker"
 
 VIDEO_BG_RESOURCES_DIRECTORY = "/mnt/video_bg_resources/"
 
-def write_images(images):
-    writer = imageio.get_writer('/home/srishti/outputvideo.mp4', fps=25)
-
+def write_images(images, new_video_filepath):
+    writer = imageio.get_writer(new_video_filepath, fps=25)
+    count = 0
     for im in images:
+        count = count + 1
+        print(count)
         writer.append_data(im[:, :, 1])
+    print("out of for loop")
     writer.close()
+    print("done write_images")
 
 
 # def write_images(images):
