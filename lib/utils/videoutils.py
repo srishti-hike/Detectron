@@ -52,8 +52,8 @@ def process(image, mask, bg):
 
     for i in range(0, height_image):
         for j in range(0, width_image):
-            # for k in range(0, depth_image):
             if mask[i, j] == 0:
                 image[i, j, :] = bg_image_resized[i, j, :]
 
+    image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
     return image
