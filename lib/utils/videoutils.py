@@ -18,7 +18,7 @@ def write_images(images, new_video_filepath):
     for im in images:
         count = count + 1
         print(count)
-        writer.append_data(im[:, :, 1])
+        writer.append_data(im)
     print("out of for loop")
     writer.close()
     print("done write_images")

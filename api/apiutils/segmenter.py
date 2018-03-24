@@ -228,6 +228,7 @@ def video_processing_cv(filepath, filename, bg_filename):
         else:
             break
         success, image = vidcap.read()
+        logger.info("Video inference count: "+ str(count))
         count += 1
 
     logger.info("Total number of frames in video: "+ str(count))

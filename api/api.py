@@ -5,7 +5,7 @@ from __future__ import print_function
 from __future__ import unicode_literals
 import uuid
 
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, jsonify
 from werkzeug import secure_filename
 from flask import send_from_directory
 
@@ -46,7 +46,10 @@ def upload_style_transfer_input():
         f = request.files['file']
         key = uuid.uuid4()
         f.save(INPUT_FILE_PATH + secure_filename(str(key)) + STICKER_SELFIE_HIT + ".jpg")
-        return CURL_PATH + str(key) + STICKER_SELFIE_HIT + OUTPUT_FILE_EXTENSION
+        return jsonify(
+            url=CURL_PATH + str(key) + STICKER_SELFIE_HIT + OUTPUT_FILE_EXTENSION
+        )
+        # return CURL_PATH + str(key) + STICKER_SELFIE_HIT + OUTPUT_FILE_EXTENSION
 
 @app.route('/potrait', methods = ['POST'])
 def upload_potraitsegmentation():
