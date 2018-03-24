@@ -222,9 +222,9 @@ def video_processing_cv(filepath, filename, bg_filename):
 
     success = True
     while True:
-        if (success and count<30):
-            new_image = video_image_segment(image)
-            image_list.insert(len(image_list), new_image)
+        if (success and count<3):
+            found, segmented_image,mask = video_image_segment(image)
+            image_list.insert(len(image_list), segmented_image)
         else:
             break
         success, image = vidcap.read()
