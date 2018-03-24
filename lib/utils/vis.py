@@ -129,13 +129,17 @@ def add_sticker_border(segmented_img, styled_img, mask, border_thick =8):
     cv2.imwrite("/home/srishti/binmask.png", im_mask)
 
     print(styled_img.shape)
-    styled_img = cv2.cvtColor(styled_img, cv2.COLOR_RGB2BGRA)
+    dummyImg = styled_img.copy()
+    dummyImg = cv2.cvtColor(dummyImg, cv2.COLOR_RGB2BGRA)
+    for x in xrange(styled_img.shape[0]):
+                for y in xrange(styled_img.shape[1]):
+                    if mask[x,y][0] == 0:
+                        dummyImg[x,y] = [0,0,0,0]
+                    else :
+                        (b,g,r) = styled_img[x,y]
+                        dummyImg[x,y] = [b,g,r,255]
 
-    for x in xrange(mask.shape[0]):
-        for y in xrange(mask.shape[1]):
-            if mask[x,y] == 0:
-                styled_img[x,y] ==[0,0,0,0]
-
+    styled_img = dummyImg.copy()
 
     mask = mask.astype(np.int32)
     _, contours, _ = cv2.findContours(
@@ -149,7 +153,6 @@ def add_sticker_border(segmented_img, styled_img, mask, border_thick =8):
         cv2.drawContours(styled_img, [approx], -1, (255,255, 255, 255), 6)
 
     return styled_img
-
 
 
 def vis_class(img, pos, class_str, font_scale=0.35):
