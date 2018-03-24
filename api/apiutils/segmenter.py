@@ -217,24 +217,23 @@ def video_processing_cv(filepath, filename, bg_filename):
 
     bg_im = cv2.imread(VIDEO_BG_RESOURCES_DIRECTORY + bg_filename)
     vidcap = cv2.VideoCapture(filepath)
+    success, image = vidcap.read()
     count = 0
-
-    writer = None
-    (h, w) = (None, None)
-    fourcc = None
-
+    print("success: " + str(success))
     success = True
+
+    (h, w) = image.shape[:2]
+    fourcc = cv2.VideoWriter_fourcc('M', 'J', 'P', 'G')
+
+    writer = cv2.VideoWriter("/home/srishti/testOut.avi", fourcc, 25,
+                             (w, h), True)
+    writer.write(image)
+
     while success:
       success,image = vidcap.read()
-      if writer is None and success == True:
-          (h, w) = image.shape[:2]
-          fourcc = cv2.VideoWriter_fourcc('M', 'J', 'P', 'G')
-          writer = cv2.VideoWriter("/home/srishti/testOutAPI.avi", fourcc, 25,
-                                   (w,h), True)
-
-
-      found, segment_im, mask = video_image_segment(image)
-      writer.write(segment_im)
+      if success == False:
+          break
+      writer.write(image)
       count += 1
 
     logger.info("Total number of frames in video: "+ str(count))
