@@ -44,6 +44,8 @@ GS_BUCKET = "gs://microapps-175405.appspot.com/srishti/"
 OUTPUT_FILE_EXTENSION = '_output.png'
 STICKER_SELFIE_HIT = "sticker"
 
+VIDEO_BG_RESOURCES_DIRECTORY = "/mnt/video_bg_resources/"
+
 def parse_args():
     parser = argparse.ArgumentParser(description='End-to-end inference')
     parser.add_argument(
@@ -168,6 +170,11 @@ def style_transfer(input_file_path, input_file_name, mask):
 
     return returned_val, DIRECTORY_TO_WRITE,  output_file_name, img_final
 
+def video_processing(filepath, filename):
+    clip = VideoFileClip(filepath)
+    modified_video = clip.fl_image(video_image_segment)
+    modified_video.write_videofile("/home/srishti/outputvideo.mp4", audio=False);
+
 def video_image_segment(im):
     filename="random" #not being used by vis_utils.segmented_images
 
@@ -201,17 +208,43 @@ def video_image_segment(im):
             if classes[index] == args.class_label and not found:
                 found = True
                 bin_mask = segmented_binary_masks[index]
-                # return found, value, bin_mask
-                return value
+                return found, value, bin_mask
 
-    logger.info(("PERSON NOT FOUND IN IMG!!!!!"))
-    return segmented_images[0]
+    logger.warn(("PERSON NOT FOUND IN IMG!!!!!"))
+    return found, segmented_images[0], segmented_binary_masks[0]
 
-def video_processing(filepath, filename):
-    clip = VideoFileClip(filepath)
-    modified_video = clip.fl_image(video_image_segment)
-    modified_video.write_videofile("/home/srishti/outputvideo.mp4", audio=False);
+def video_processing_cv(filepath, filename, bg_filename):
 
+    bg_im = cv2.imread(VIDEO_BG_RESOURCES_DIRECTORY + bg_filename)
+
+
+    vidcap = cv2.VideoCapture(filepath)
+    success,image = vidcap.read()
+    count = 0
+    print("success: "+str(success))
+    success = True
+
+    fourcc = cv2.VideoWriter_fourcc(*args["codec"])
+    writer = None
+    (h, w) = (None, None)
+    zeros = None
+
+
+    while success:
+      success,image = vidcap.read()
+      print('Read a new frame: ', success)
+      found, segment_im, mask = video_image_segment(image)
+
+      (h, w) = segment_im.shape[:2]
+      writer = cv2.VideoWriter("/home/srishti/testOut.avi", cv2.CV_FOURCC('M','J','P','G'), 25,
+                               (w * 2, h * 2), True)
+      writer.write(segment_im)
+
+      # cv2.imwrite(TMP_FRAME_PATH + filename +"_%d.jpg" % count, image)     # save frame as JPEG file
+
+      count += 1
+
+    return str(key)
 
 
 class Watcher:
@@ -247,7 +280,7 @@ class Handler(FileSystemEventHandler):
 
             if ".mp4" in original_filename:
                 print ("need to proccess video")
-                video_processing(event.src_path, original_filename)
+                video_processing_cv(event.src_path, original_filename)
 
 
             # Image segmentation
