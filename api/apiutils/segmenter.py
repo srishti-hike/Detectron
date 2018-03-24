@@ -224,11 +224,11 @@ def video_processing_cv(filepath, filename, bg_filename):
     while True:
         if (success and count<1):
             found, segmented_image,mask = video_image_segment(image)
-            cv2.imwrite("/home/srishti/image-frame.png")
-            cv2.imwrite("/home/srishti/segmented_image.png")
-            cv2.imwrite("/home/srishti/mask.png")
+            cv2.imwrite("/home/srishti/image-frame.png", image)
+            cv2.imwrite("/home/srishti/segmented_image.png", segmented_image)
+            cv2.imwrite("/home/srishti/mask.png", mask)
             im_mask = vis_utils.vis_binary_mask(image, mask)
-            cv2.imwrite("/home/srishti/bim_mask.png")
+            cv2.imwrite("/home/srishti/bim_mask.png", im_mask)
             image_list.insert(len(image_list), segmented_image)
         else:
             break
