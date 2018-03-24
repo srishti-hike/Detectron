@@ -224,7 +224,6 @@ def video_processing_cv(filepath, filename, bg_filename):
     print("success: "+str(success))
     success = True
 
-    fourcc = cv2.VideoWriter_fourcc(*args["codec"])
     writer = None
     (h, w) = (None, None)
     zeros = None
@@ -236,8 +235,8 @@ def video_processing_cv(filepath, filename, bg_filename):
       found, segment_im, mask = video_image_segment(image)
 
       (h, w) = segment_im.shape[:2]
-      writer = cv2.VideoWriter("/home/srishti/testOut.avi", cv2.CV_FOURCC('M','J','P','G'), 25,
-                               (w * 2, h * 2), True)
+      writer = cv2.VideoWriter("/home/srishti/testOut.avi", cv2.VideoWriter_fourcc(*'MJPG'), 25,
+                               segment_im[:2], True)
       writer.write(segment_im)
 
       # cv2.imwrite(TMP_FRAME_PATH + filename +"_%d.jpg" % count, image)     # save frame as JPEG file
@@ -280,7 +279,7 @@ class Handler(FileSystemEventHandler):
 
             if ".mp4" in original_filename:
                 print ("need to proccess video")
-                video_processing_cv(event.src_path, original_filename)
+                video_processing_cv(event.src_path, original_filename, "sky_news.jpg")
 
 
             # Image segmentation
