@@ -222,7 +222,7 @@ def video_processing_cv(filepath, filename, bg_filename):
 
     success = True
     while True:
-        if (success):
+        if (success and count<30):
             new_image = video_image_segment(image)
             image_list.insert(len(image_list), new_image)
         else:
