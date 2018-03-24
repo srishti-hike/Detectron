@@ -32,7 +32,6 @@ def process(image, mask, bg):
     selected_bg_height_normalized = 0.8
 
     height_image, width_image, depth_image = image.shape
-    height_mask, width_mask, depth_mask = mask.shape
     height_bg, width_bg, depth_bg = image.shape
 
 
@@ -53,8 +52,8 @@ def process(image, mask, bg):
 
     for i in range(0, height_image):
         for j in range(0, width_image):
-            for k in range(0, depth_image):
-                if mask[i, j, k] == 0:
-                    image[i, j, k] = bg_image_resized[i, j, k]
+            # for k in range(0, depth_image):
+            if mask[i, j] == 0:
+                image[i, j, :] = bg_image_resized[i, j, :]
 
     return image
