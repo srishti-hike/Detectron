@@ -1,0 +1,22 @@
+import skvideo.io
+
+
+MILLISECONDS_IN_SECOND= 1000.0
+DIRECTORY_TO_WATCH = "/mnt/api_files/input/"
+DIRECTORY_TEMP = "/mnt/api_files/tmp/"
+DIRECTORY_TO_WRITE = "/mnt/api_files/output/"
+GS_BUCKET = "gs://microapps-175405.appspot.com/srishti/"
+OUTPUT_FILE_EXTENSION = '_output.png'
+STICKER_SELFIE_HIT = "sticker"
+
+VIDEO_BG_RESOURCES_DIRECTORY = "/mnt/video_bg_resources/"
+
+
+def write_images(images):
+    writer = skvideo.io.FFmpegWriter("/home/srishti/outputvideo.mp4")
+    count = 0
+    for im in images:
+        writer.writeFrame(im)
+        count = count + 1
+
+    writer.close()

@@ -14,9 +14,6 @@ import sys
 import time
 from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
-import moviepy
-from moviepy.editor import VideoFileClip
-from moviepy.editor import *
 
 from caffe2.python import workspace
 
@@ -30,6 +27,7 @@ import utils.c2 as c2_utils
 import utils.logging
 import utils.vis as vis_utils
 import utils.segms as segms
+import utils.videoutils as vid_utils
 
 c2_utils.import_detectron_ops()
 # OpenCL may be enabled by default in OpenCV3; disable it because it's not
@@ -214,29 +212,33 @@ def video_image_segment(im):
     return found, segmented_images[0], segmented_binary_masks[0]
 
 def video_processing_cv(filepath, filename, bg_filename):
+    image_list = []
 
     bg_im = cv2.imread(VIDEO_BG_RESOURCES_DIRECTORY + bg_filename)
     vidcap = cv2.VideoCapture(filepath)
     success, image = vidcap.read()
+    image_list.insert(len(image_list), image)
     count = 0
     print("success: " + str(success))
     success = True
-
-    (h, w) = image.shape[:2]
-    fourcc = cv2.VideoWriter_fourcc('M', 'J', 'P', 'G')
-
-    writer = cv2.VideoWriter("/home/srishti/testOut.avi", fourcc, 25,
-                             (w, h), True)
-    writer.write(image)
+    #
+    # (h, w) = image.shape[:2]
+    # fourcc = cv2.VideoWriter_fourcc('M', 'J', 'P', 'G')
+    #
+    # writer = cv2.VideoWriter("/home/srishti/testOut.avi", fourcc, 25,
+    #                          (w, h), True)
+    # writer.write(image)
 
     while success:
-      success,image = vidcap.read()
-      if success == False:
+        success,image = vidcap.read()
+        if success == False:
           break
-      writer.write(image)
-      count += 1
+        image_list.insert(len(image_list), image)
+        count += 1
 
     logger.info("Total number of frames in video: "+ str(count))
+    vid_utils.write_images(image_list)
+
 
 
 class Watcher:
