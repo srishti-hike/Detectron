@@ -1,6 +1,8 @@
 # import skvideo.io
 # import cv2
 import imageio
+import numpy as np
+import cv2
 
 MILLISECONDS_IN_SECOND= 1000.0
 DIRECTORY_TO_WATCH = "/mnt/api_files/input/"
@@ -24,14 +26,35 @@ def write_images(images, new_video_filepath):
     print("done write_images")
 
 
-# def write_images(images, new_video_filepath):
-#     print("in function write_images")
-#     writer = skvideo.io.FFmpegWriter(new_video_filepath)
-#     count = 0
-#     for im in images:
-#         print("writing: "+ str(count))
-#         writer.writeFrame(im)
-#         count = count + 1
-#     print("finished writing")
-#     writer.close()
-#     print("returning from write_images")
+def process(image, mask, bg):
+    topLeft_bg_normalized = [0.3, 0.0]
+    selected_bg_width_normalized = 0.4
+    selected_bg_height_normalized = 0.8
+
+    height_image, width_image, depth_image = image.shape
+    height_mask, width_mask, depth_mask = mask.shape
+    height_bg, width_bg, depth_bg = image.shape
+
+
+    topLeft_bg = [topLeft_bg_normalized[0] * width_bg, topLeft_bg_normalized[1] * height_bg]
+    selected_bg_width = selected_bg_width_normalized * width_bg
+    selected_bg_height = selected_bg_height_normalized * height_bg
+
+    bg_image = np.zeros(shape=(int(selected_bg_height), int(selected_bg_width), 3))
+
+    print("selected_bg_height" + str(selected_bg_height))
+    print("selected_bg_width" + str(selected_bg_width))
+    for i in range(0, int(selected_bg_height)):
+        for j in range(0, int(selected_bg_width)):
+            for k in range(0, 3):  # ...
+                bg_image[i, j, k] = bg[int(topLeft_bg[1]) + i, int(topLeft_bg[0]) + j, k]
+
+    bg_image_resized = cv2.resize(bg_image, (width_image, height_image))
+
+    for i in range(0, height_image):
+        for j in range(0, width_image):
+            for k in range(0, depth_image):
+                if mask[i, j, k] == 0:
+                    image[i, j, k] = bg_image_resized[i, j, k]
+
+    return image
