@@ -131,9 +131,12 @@ def add_sticker_border(segmented_img, styled_img, mask, border_thick =8):
     print(styled_img.shape)
     dummyImg = styled_img.copy()
     dummyImg = cv2.cvtColor(dummyImg, cv2.COLOR_RGB2BGRA)
+
+    bin_mask = vis_binary_mask(styled_img, mask)
+
     for x in xrange(styled_img.shape[0]):
                 for y in xrange(styled_img.shape[1]):
-                    if mask[x,y][0] == 0:
+                    if bin_mask[x,y] == 0:
                         dummyImg[x,y] = [0,0,0,0]
                     else :
                         (b,g,r) = styled_img[x,y]
