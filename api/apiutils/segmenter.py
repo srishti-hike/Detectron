@@ -216,34 +216,27 @@ def video_image_segment(im):
 def video_processing_cv(filepath, filename, bg_filename):
 
     bg_im = cv2.imread(VIDEO_BG_RESOURCES_DIRECTORY + bg_filename)
-
-
     vidcap = cv2.VideoCapture(filepath)
-    success,image = vidcap.read()
     count = 0
-    print("success: "+str(success))
-    success = True
 
     writer = None
     (h, w) = (None, None)
-    zeros = None
+    fourcc = cv2.VideoWriter_fourcc('M', 'J', 'P', 'G')
 
-
+    success = True
     while success:
       success,image = vidcap.read()
-      print('Read a new frame: ', success)
+      if writer is None and success == True:
+          (h, w) = image.shape[:2]
+          writer = cv2.VideoWriter("/home/srishti/testOutAPI.avi", cv2.VideoWriter_fourcc(*'MJPG'), 25,
+                                   (w,h), True)
+
+
       found, segment_im, mask = video_image_segment(image)
-
-      (h, w) = segment_im.shape[:2]
-      writer = cv2.VideoWriter("/home/srishti/testOut.avi", cv2.VideoWriter_fourcc(*'MJPG'), 25,
-                               segment_im[:2], True)
       writer.write(segment_im)
-
-      # cv2.imwrite(TMP_FRAME_PATH + filename +"_%d.jpg" % count, image)     # save frame as JPEG file
-
       count += 1
 
-    return str(key)
+    logger.info("Total number of frames in video: "+ str(count))
 
 
 class Watcher:
