@@ -1,5 +1,6 @@
-import skvideo.io
-
+# import skvideo.io
+# import cv2
+import imageio
 
 MILLISECONDS_IN_SECOND= 1000.0
 DIRECTORY_TO_WATCH = "/mnt/api_files/input/"
@@ -11,12 +12,21 @@ STICKER_SELFIE_HIT = "sticker"
 
 VIDEO_BG_RESOURCES_DIRECTORY = "/mnt/video_bg_resources/"
 
-
 def write_images(images):
-    writer = skvideo.io.FFmpegWriter("/home/srishti/outputvideo.mp4")
-    count = 0
-    for im in images:
-        writer.writeFrame(im)
-        count = count + 1
+    writer = imageio.get_writer('/home/srishti/outputvideo.mp4', fps=25)
 
+    for im in images:
+        writer.append_data(im[:, :, 1])
     writer.close()
+
+
+# def write_images(images):
+#     print("in function write_images")
+#     writer = skvideo.io.FFmpegWriter("/home/srishti/outputvideo.mp4")
+#     count = 0
+#     for im in images:
+#         print("writing: "+ str(count))
+#         writer.writeFrame(im)
+#         count = count + 1
+#
+#     writer.close()
