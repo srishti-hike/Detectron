@@ -221,13 +221,14 @@ def video_processing_cv(filepath, filename, bg_filename):
 
     writer = None
     (h, w) = (None, None)
-    fourcc = cv2.VideoWriter_fourcc('M', 'J', 'P', 'G')
+    fourcc = None
 
     success = True
     while success:
       success,image = vidcap.read()
       if writer is None and success == True:
           (h, w) = image.shape[:2]
+          fourcc = cv2.VideoWriter_fourcc('M', 'J', 'P', 'G')
           writer = cv2.VideoWriter("/home/srishti/testOutAPI.avi", fourcc, 25,
                                    (w,h), True)
 
