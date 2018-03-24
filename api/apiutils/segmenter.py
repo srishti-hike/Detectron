@@ -222,7 +222,7 @@ def video_processing_cv(filepath, filename, bg_filename):
 
     success = True
     while True:
-        if (success and count<3):
+        if (success and count<10):
             found, segmented_image,mask = video_image_segment(image)
             image_list.insert(len(image_list), segmented_image)
         else:
@@ -264,15 +264,15 @@ class Handler(FileSystemEventHandler):
 
         elif event.event_type == 'created':
             # Take any action here when a file is first created.
-            logger.error("Received created event - %s." % event.src_path)
+            logger.info("Received created event - %s." % event.src_path)
             im_list = [event.src_path]
             k = event.src_path.rfind("/")
             original_filename = event.src_path[k+1:]
 
             if ".mp4" in original_filename:
-                logger.error("need to proccess video")
+                logger.info("need to proccess video")
                 video_processing_cv(event.src_path, original_filename, "sky_news.jpg")
-                logger.error("done mp4 processing")
+                logger.info("done mp4 processing")
 
 
 
