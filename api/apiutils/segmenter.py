@@ -326,6 +326,7 @@ class Handler(FileSystemEventHandler):
 
             # Image segmentation
             else:
+                logger.info("IMLIST size: " + len(im_list))
                 found, filevalue, binmask_value = segment(im_list, event.src_path[k+1:])
                 style = STICKER_SELFIE_HIT in original_filename
                 gcs_filename = original_filename.rstrip(".jpg") + OUTPUT_FILE_EXTENSION
