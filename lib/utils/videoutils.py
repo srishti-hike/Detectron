@@ -26,7 +26,7 @@ def write_images(images, new_video_filepath):
     print("done write_images")
 
 
-def process(image, mask, bg, topLeft_bg_normalized, selected_bg_width_normalized, selected_bg_height_normalized):
+def process(image, mask, mask_bin, bg, topLeft_bg_normalized, selected_bg_width_normalized, selected_bg_height_normalized):
 
 
     height_image, width_image, depth_image = image.shape
@@ -54,6 +54,17 @@ def process(image, mask, bg, topLeft_bg_normalized, selected_bg_width_normalized
                 image[i, j, :] = bg_image_resized[i, j, :]
 
     image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
+
+    mask_bin = mask_bin.astype(np.int32)
+    _, contours, _ = cv2.findContours(
+        mask_bin.copy(), cv2.RETR_CCOMP, cv2.CHAIN_APPROX_NONE)
+
+    for c in contours:
+        epsilon = 0.003 * cv2.arcLength(c, True)
+        approx = cv2.approxPolyDP(c, epsilon, True)
+
+        cv2.drawContours(image, [approx], -1, (255, 204, 204, 204), 10)
+        cv2.drawContours(image, [approx], -1, (255, 255, 255, 255), 6)
     # width_offset = 10
     # height_offset = 10*height_image/width_image
     # final_image = image[height_offset/2:height_image - height_offset/2, width_offset/2:width_image - width_offset/2]

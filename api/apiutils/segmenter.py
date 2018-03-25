@@ -241,43 +241,43 @@ def video_processing_cv(filepath, filename, metadata):
         if (success and count<10):
             found, segmented_image,mask = video_image_segment(image)
             im_mask = vis_utils.vis_binary_mask(image, mask)
-            input_image_list.insert(len(input_image_list), image)
-            bin_mask_list.insert(len(bin_mask_list), mask)
-            bin_mask_img_list.insert(len(bin_mask_img_list), im_mask)
-            # image = vid_utils.process(image, im_mask, bg_im, topLeft_bg_normalized, selected_bg_width_normalized, selected_bg_height_normalized)
-            # image_list.insert(len(image_list), image)
+            # input_image_list.insert(len(input_image_list), image)
+            # bin_mask_list.insert(len(bin_mask_list), mask)
+            # bin_mask_img_list.insert(len(bin_mask_img_list), im_mask)
+            image = vid_utils.process(image, im_mask, mask,bg_im, topLeft_bg_normalized, selected_bg_width_normalized, selected_bg_height_normalized)
+            image_list.insert(len(image_list), image)
         else:
             break
         success, image = vidcap.read()
         logger.info("Video inference count: "+ str(count))
         count += 1
 
-    processed_images =[]
-    new_bin_masks = []
-
-
-
-    for counter, bin_mask_img in enumerate(bin_mask_img_list):
-        # logger.info("len(bin_mask_img_list): "+str(len(bin_mask_img_list)))
-        # if counter == 0 or counter == 1 or counter == len(bin_mask_img_list)-1 or counter == len(bin_mask_img_list)-2:
-        if counter == 0  or counter == len(bin_mask_img_list)-1:
-            logger.info("in if: counter: "+ str(counter))
-            new_bin_masks.insert(len(new_bin_masks), bin_mask_img)
-            processed_image = vid_utils.process(input_image_list[counter], bin_mask_img, bg_im, topLeft_bg_normalized, selected_bg_width_normalized, selected_bg_height_normalized)
-            processed_images.insert(len(processed_images), processed_image)
-        else:
-            logger.info("in else: counter: " + str(counter))
-            mask_average = np.mean(bin_mask_img_list[counter-1:counter+1], axis=0)
-            mask_round = np.round(mask_average)
-            processed_image = vid_utils.process(input_image_list[counter], mask_round, bg_im, topLeft_bg_normalized,
-                                                selected_bg_width_normalized, selected_bg_height_normalized)
-            processed_images.insert(len(processed_images), processed_image)
-
+    # processed_images =[]
+    # new_bin_masks = []
+    #
+    #
+    #
+    # for counter, bin_mask_img in enumerate(bin_mask_img_list):
+    #     # logger.info("len(bin_mask_img_list): "+str(len(bin_mask_img_list)))
+    #     # if counter == 0 or counter == 1 or counter == len(bin_mask_img_list)-1 or counter == len(bin_mask_img_list)-2:
+    #     if counter == 0  or counter == len(bin_mask_img_list)-1:
+    #         logger.info("in if: counter: "+ str(counter))
+    #         new_bin_masks.insert(len(new_bin_masks), bin_mask_img)
+    #         processed_image = vid_utils.process(input_image_list[counter], bin_mask_img, bg_im, topLeft_bg_normalized, selected_bg_width_normalized, selected_bg_height_normalized)
+    #         processed_images.insert(len(processed_images), processed_image)
+    #     else:
+    #         logger.info("in else: counter: " + str(counter))
+    #         mask_average = np.mean(bin_mask_img_list[counter-1:counter+1], axis=0)
+    #         mask_round = np.round(mask_average)
+    #         processed_image = vid_utils.process(input_image_list[counter], mask_round, bg_im, topLeft_bg_normalized,
+    #                                             selected_bg_width_normalized, selected_bg_height_normalized)
+    #         processed_images.insert(len(processed_images), processed_image)
+    #
 
     logger.info("Total number of frames in video: "+ str(count))
     output_video_filename = filename.rstrip(".mp4") + OUTPUT_VIDEO_FILE_EXTENSION
     new_video_filepath = DIRECTORY_TO_WRITE + output_video_filename
-    vid_utils.write_images(processed_images, new_video_filepath )
+    vid_utils.write_images(image_list, new_video_filepath )
     write_to_gcs(new_video_filepath, output_video_filename)
     logger.info("Done writing")
 
