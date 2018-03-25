@@ -289,7 +289,8 @@ class Handler(FileSystemEventHandler):
                 logger.info("need to proccess video")
                 meta_filename = original_filename.rstrip(".mp4") + VIDEO_METADATA_FILE_EXTENSION
                 metadata = yaml.safe_load(open(INPUT_VIDEO_PATH_METADATA + meta_filename))
-                logger.info(metadata.type)
+                logger.info(metadata)
+                logger.info(type(metadata))
                 video_processing_cv(event.src_path, original_filename, metadata)
                 logger.info("done mp4 processing")
 
