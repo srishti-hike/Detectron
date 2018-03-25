@@ -70,8 +70,10 @@ def upload_potraitsegmentation():
 def upload_video():
     if request.method == 'POST':
         f = request.files['file']
+        filecomment = request.files['filecomment']
         filename = secure_filename(f.filename)
         print(request)
+        print("filecomment: " + filecomment)
         print("filename: " + filename)
 
         key = uuid.uuid4()
