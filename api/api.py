@@ -70,7 +70,12 @@ def upload_potraitsegmentation():
 @app.route('/test', methods = ['POST'])
 def test():
     if request.method == 'POST':
-        f = request.files['filename']
+        print(request)
+        print(request.form)
+        print(request.args)
+        print(request.files)
+        print(request.values)
+        f = request.files['uploaded_file']
         filename = secure_filename(f.filename)
         return jsonify(
             status= "file found",
@@ -80,7 +85,7 @@ def test():
 @app.route('/video', methods = ['POST'])
 def upload_video():
     if request.method == 'POST':
-        f = request.files['filename']
+        f = request.files['uploaded_file']
         filename = secure_filename(f.filename)
         key = uuid.uuid4()
 
