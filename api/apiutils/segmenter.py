@@ -263,7 +263,7 @@ def video_processing_cv(filepath, filename, metadata):
     bin_mask_list = []
     bin_mask_img_list = []
     bg_im = cv2.imread(VIDEO_BG_RESOURCES_DIRECTORY + bg_filename)
-    returned_value = extract_audio(filepath, output_video_filename)
+    returned_value = vid_utils.extract_audio(filepath, output_video_filename)
     logger.info("audio extraction done")
 
     vidcap = cv2.VideoCapture(filepath)
