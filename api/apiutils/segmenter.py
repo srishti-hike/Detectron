@@ -286,8 +286,8 @@ class Handler(FileSystemEventHandler):
             else:
                 found, filevalue, binmask_value = segment(im_list, event.src_path[k+1:])
                 style = STICKER_SELFIE_HIT in original_filename
+                gcs_filename = original_filename.rstrip(".jpg") + OUTPUT_FILE_EXTENSION
                 if found:
-                    gcs_filename = original_filename.rstrip(".jpg") + OUTPUT_FILE_EXTENSION
                     final_local_file = DIRECTORY_TO_WRITE + original_filename.rstrip(".jpg") + OUTPUT_FILE_EXTENSION
                     if style:
                         tmp_local_file = DIRECTORY_TEMP + original_filename.rstrip(".jpg") + "segmented.png"
