@@ -4,10 +4,12 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 import uuid
+import json
 
 from flask import Flask, render_template, request, jsonify
 from werkzeug import secure_filename
 from flask import send_from_directory
+
 
 app = Flask(__name__)
 
@@ -18,7 +20,8 @@ OUTPUT_FILE_EXTENSION = '_output.png'
 STICKER_SELFIE_HIT = "sticker"
 
 
-INPUT_VIDEO_PATH = "/mnt/api_files/video/input/"
+INPUT_VIDEO_PATH_METADATA = "/mnt/api_files/video/input/"
+OUTPUT_VIDEO_FILE_EXTENSION = "_output.mp4"
 
 @app.route('/')
 def hello_world():
@@ -38,7 +41,10 @@ def upload_file_done():
         f = request.files['file']
         key = uuid.uuid4()
         f.save(INPUT_FILE_PATH + secure_filename(str(key) + '.jpg'))
-        return 'file uploaded successfully. Hit this to see results: : '+ CURL_PATH + str(key) + OUTPUT_FILE_EXTENSION
+        return jsonify(
+            status='file uploaded successfully. Hit this to see results.',
+            url = CURL_PATH + str(key) + OUTPUT_FILE_EXTENSION
+        )
 
 @app.route('/sticker', methods = ['POST'])
 def upload_style_transfer_input():
@@ -47,9 +53,8 @@ def upload_style_transfer_input():
         key = uuid.uuid4()
         f.save(INPUT_FILE_PATH + secure_filename(str(key)) + STICKER_SELFIE_HIT + ".jpg")
         return jsonify(
-            url=CURL_PATH + str(key) + STICKER_SELFIE_HIT + OUTPUT_FILE_EXTENSION
+            url = CURL_PATH + str(key) + STICKER_SELFIE_HIT + OUTPUT_FILE_EXTENSION
         )
-        # return CURL_PATH + str(key) + STICKER_SELFIE_HIT + OUTPUT_FILE_EXTENSION
 
 @app.route('/potrait', methods = ['POST'])
 def upload_potraitsegmentation():
@@ -57,15 +62,25 @@ def upload_potraitsegmentation():
         f = request.files['file']
         key = uuid.uuid4()
         f.save(INPUT_FILE_PATH + secure_filename(str(key)) + ".jpg")
-        return CURL_PATH + str(key) + OUTPUT_FILE_EXTENSION
+        return jsonify(
+            url = CURL_PATH + str(key) + OUTPUT_FILE_EXTENSION
+        )
 
 @app.route('/video', methods = ['POST'])
 def upload_video():
     if request.method == 'POST':
         f = request.files['file']
         filename = secure_filename(f.filename)
+        content = request.get_json()
+        key = uuid.uuid4()
+
+        with open(INPUT_VIDEO_PATH_METADATA + str(key) +"_metadata.txt", 'w') as outfile:
+            json.dump(content, outfile)
+
         f.save(INPUT_FILE_PATH + secure_filename(f.filename))
-        return filename
+        return jsonify(
+            url = CURL_PATH + str(key) + OUTPUT_VIDEO_FILE_EXTENSION
+        )
 
 if __name__ == '__main__':
       app.run(host='0.0.0.0', port=80)
