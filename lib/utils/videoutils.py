@@ -35,7 +35,7 @@ def write_images(images, new_video_filepath, video_filename):
           + ".mp3" + " -c:v copy -c:a aac -strict experimental " + new_video_filepath
 
     returned_val = os.system(cmd)
-    print("returned value: " +returned_val)
+    print("returned value: " +str(returned_val))
     print("done write_images and audio")
 
 def extract_audio(video_path, video_filename):
