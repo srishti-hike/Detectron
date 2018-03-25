@@ -108,7 +108,36 @@ def write_to_gcs(local_filepath, gcs_filename):
     logger.info("written to gcs: " + local_filepath + ", returned value: "+ str(returned_value))
     return returned_value
 
+def image_resize(image, height = None, width = None, inter = cv2.INTER_AREA):
+    # initialize the dimensions of the image to be resized and
+    # grab the image size
+    dim = None
+    (h, w) = image.shape[:2]
 
+    # if both the width and height are None, then return the
+    # original image
+    if width is None and height is None:
+        return image
+
+    # check to see if the width is None
+    if width is None:
+        # calculate the ratio of the height and construct the
+        # dimensions
+        r = height / float(h)
+        dim = (int(w * r), height)
+
+    # otherwise, the height is None
+    else:
+        # calculate the ratio of the width and construct the
+        # dimensions
+        r = width / float(w)
+        dim = (width, int(h * r))
+
+    # resize the image
+    resized = cv2.resize(image, dim, interpolation = inter)
+
+    # return the resized image
+    return resized
 
 def segment(im_list, filename):
     for i, im_name in enumerate(im_list):
@@ -117,6 +146,8 @@ def segment(im_list, filename):
         )
         logger.info('Processing {} -> {}'.format(im_name, out_name))
         im = cv2.imread(im_name)
+        if (im.shape[0] > 650):
+            im = image_resize(im, height=600)
         timers = defaultdict(Timer)
         t = time.time()
         with c2_utils.NamedCudaScope(0):
