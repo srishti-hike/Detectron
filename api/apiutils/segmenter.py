@@ -144,7 +144,7 @@ def segment(im_list, filename):
                     bin_mask = segmented_binary_masks[index]
                     return found,  value, bin_mask
 
-        return found, "", "", ""
+        return found, "", ""
 
 def style_transfer(input_file_path, input_file_name, mask):
     logger.info("in function style_transfer")
