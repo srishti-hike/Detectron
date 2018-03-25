@@ -69,15 +69,16 @@ def upload_potraitsegmentation():
 @app.route('/video', methods = ['POST'])
 def upload_video():
     if request.method == 'POST':
-        f = request.files['file']
-        filename = secure_filename(f.filename)
+        # f = request.files['file']
+        # filename = secure_filename(f.filename)
         content = request.get_json()
+        print(content)
         key = uuid.uuid4()
 
         with open(INPUT_VIDEO_PATH_METADATA + str(key) +"_metadata.txt", 'w') as outfile:
             json.dump(content, outfile)
 
-        f.save(INPUT_FILE_PATH + secure_filename(f.filename))
+        # f.save(INPUT_FILE_PATH + secure_filename(f.filename))
         return jsonify(
             url = CURL_PATH + str(key) + OUTPUT_VIDEO_FILE_EXTENSION
         )
