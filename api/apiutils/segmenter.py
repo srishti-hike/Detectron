@@ -12,6 +12,7 @@ import logging
 import os
 import sys
 import json
+import yaml
 import time
 from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
@@ -218,6 +219,8 @@ def video_image_segment(im):
 
 def video_processing_cv(filepath, filename, metadata):
 
+    logger.info(metadata["topLeft_bg_normalized_1"])
+    logger.info(metadata["topLeft_bg_normalized_1"].type)
     topLeft_bg_normalized = [metadata['topLeft_bg_normalized_1'], metadata['topLeft_bg_normalized_2']]
     selected_bg_width_normalized = metadata['selected_bg_width_normalized']
     selected_bg_height_normalized = metadata['selected_bg_height_normalized']
@@ -285,7 +288,7 @@ class Handler(FileSystemEventHandler):
             if ".mp4" in original_filename:
                 logger.info("need to proccess video")
                 meta_filename = original_filename.rstrip(".mp4") + VIDEO_METADATA_FILE_EXTENSION
-                metadata = json.load(open(INPUT_VIDEO_PATH_METADATA + meta_filename))
+                metadata = yaml.safe_load(open("4f996051-f1fa-4c76-be3d-9635230e1e5c_metadata.txt"))
                 video_processing_cv(event.src_path, original_filename, metadata)
                 logger.info("done mp4 processing")
 
