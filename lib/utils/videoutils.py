@@ -30,9 +30,9 @@ def write_images(images, new_video_filepath, video_filename):
     print("out of for loop")
     writer.close()
 
-    cmd = "ffmpeg -i " + DIRECTORY_TEMP + video_filename + " -i "
-    + DIRECTORY_TEMP + video_filename.rstrip(".mp4")
-    + ".mp3" +" -c:v copy -c:a aac -strict experimental "+ new_video_filepath
+    cmd = "ffmpeg -i " + DIRECTORY_TEMP + video_filename + " -i " \
+          + DIRECTORY_TEMP + video_filename.rstrip(".mp4") \
+          + ".mp3" + " -c:v copy -c:a aac -strict experimental " + new_video_filepath
 
     returned_val = os.system(cmd)
     print("returned value: " +returned_val)
