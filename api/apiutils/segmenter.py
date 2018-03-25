@@ -218,9 +218,7 @@ def video_image_segment(im):
     return found, segmented_images[0], segmented_binary_masks[0]
 
 def video_processing_cv(filepath, filename, metadata):
-    logger.info(metadata)
-    logger.info(metadata["topLeft_bg_normalized_1"])
-    logger.info(metadata["topLeft_bg_normalized_1"].type)
+
     topLeft_bg_normalized = [metadata['topLeft_bg_normalized_1'], metadata['topLeft_bg_normalized_2']]
     selected_bg_width_normalized = metadata['selected_bg_width_normalized']
     selected_bg_height_normalized = metadata['selected_bg_height_normalized']
