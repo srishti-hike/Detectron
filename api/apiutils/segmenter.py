@@ -11,8 +11,10 @@ import glob
 import logging
 import os
 import sys
+from queue import Queue
 import json
 import yaml
+import numpy as np
 import time
 from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
@@ -225,6 +227,9 @@ def video_processing_cv(filepath, filename, metadata):
     bg_filename = metadata['bg_filename']
 
     image_list = []
+    input_image_list = []
+    bin_mask_list = []
+    bin_mask_img_list = []
     bg_im = cv2.imread(VIDEO_BG_RESOURCES_DIRECTORY + bg_filename)
 
     vidcap = cv2.VideoCapture(filepath)
@@ -236,18 +241,39 @@ def video_processing_cv(filepath, filename, metadata):
         if (success and count<10):
             found, segmented_image,mask = video_image_segment(image)
             im_mask = vis_utils.vis_binary_mask(image, mask)
-            image = vid_utils.process(image, im_mask, bg_im, topLeft_bg_normalized, selected_bg_width_normalized, selected_bg_height_normalized)
-            image_list.insert(len(image_list), image)
+            input_image_list.insert(len(input_image_list), image)
+            bin_mask_list.insert(len(bin_mask_list), mask)
+            bin_mask_img_list.insert(len(bin_mask_img_list), im_mask)
+            # image = vid_utils.process(image, im_mask, bg_im, topLeft_bg_normalized, selected_bg_width_normalized, selected_bg_height_normalized)
+            # image_list.insert(len(image_list), image)
         else:
             break
         success, image = vidcap.read()
         logger.info("Video inference count: "+ str(count))
         count += 1
 
+    processed_images =[]
+    new_bin_masks = []
+
+
+
+    for counter, bin_mask_img in enumerate(bin_mask_img_list):
+        if counter == 0 or counter == 1 or counter == len(bin_mask_img_list-1) or counter == len(bin_mask_img_list)-2:
+            new_bin_masks.insert(len(new_bin_masks), bin_mask_img)
+            processed_image = vid_utils.process(input_image_list[counter], bin_mask_img, bg_im, topLeft_bg_normalized, selected_bg_width_normalized, selected_bg_height_normalized)
+            processed_images.insert(len(processed_images), processed_image)
+        else:
+            mask_average = np.mean(new_bin_masks[counter-2:counter+2])
+            mask_round = np.round(mask_average).astype(int)
+            processed_image = vid_utils.process(input_image_list[counter], mask_round, bg_im, topLeft_bg_normalized,
+                                                selected_bg_width_normalized, selected_bg_height_normalized)
+            processed_images.insert(len(processed_images), processed_image)
+
+
     logger.info("Total number of frames in video: "+ str(count))
     output_video_filename = filename.rstrip(".mp4") + OUTPUT_VIDEO_FILE_EXTENSION
     new_video_filepath = DIRECTORY_TO_WRITE + output_video_filename
-    vid_utils.write_images(image_list, new_video_filepath )
+    vid_utils.write_images(processed_images, new_video_filepath )
     write_to_gcs(new_video_filepath, output_video_filename)
     logger.info("Done writing")
 
