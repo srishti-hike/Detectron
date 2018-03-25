@@ -70,7 +70,7 @@ def upload_potraitsegmentation():
 @app.route('/video', methods = ['POST'])
 def upload_video():
     if request.method == 'POST':
-        f = request.files['file']
+        f = request.files['filename']
         filename = secure_filename(f.filename)
         key = uuid.uuid4()
 
