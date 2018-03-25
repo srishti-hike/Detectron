@@ -274,7 +274,7 @@ def video_processing_cv(filepath, filename, metadata):
 
     success = True
     while True:
-        if (success and count<10):
+        if (success):
             found, segmented_image,mask = video_image_segment(image)
             im_mask = vis_utils.vis_binary_mask(image, mask)
             # input_image_list.insert(len(input_image_list), image)
@@ -313,7 +313,7 @@ def video_processing_cv(filepath, filename, metadata):
     logger.info("Total number of frames in video: "+ str(count))
     output_video_filename = filename.rstrip(".mp4") + OUTPUT_VIDEO_FILE_EXTENSION
     new_video_filepath = DIRECTORY_TO_WRITE + output_video_filename
-    vid_utils.write_images(image_list, new_video_filepath, filepath)
+    vid_utils.write_images(image_list, new_video_filepath)
     write_to_gcs(new_video_filepath, output_video_filename)
     logger.info("Done writing")
 
