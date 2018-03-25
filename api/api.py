@@ -22,6 +22,7 @@ STICKER_SELFIE_HIT = "sticker"
 
 INPUT_VIDEO_PATH_METADATA = "/mnt/api_files/video/input/"
 OUTPUT_VIDEO_FILE_EXTENSION = "_output.mp4"
+VIDEO_METADATA_FILE_EXTENSION = "_metadata.txt"
 
 @app.route('/')
 def hello_world():
@@ -74,8 +75,8 @@ def upload_video():
         filename = secure_filename(f.filename)
         key = uuid.uuid4()
 
-        with open(INPUT_VIDEO_PATH_METADATA + str(key) +"_metadata.txt", 'w') as outfile:
-            print("Dumping at :" + INPUT_VIDEO_PATH_METADATA + str(key) +"_metadata.txt")
+        with open(INPUT_VIDEO_PATH_METADATA + str(key) +VIDEO_METADATA_FILE_EXTENSION, 'w') as outfile:
+            print("Dumping at :" + INPUT_VIDEO_PATH_METADATA + str(key) +VIDEO_METADATA_FILE_EXTENSION)
             json.dump(options, outfile)
 
         f.save(INPUT_FILE_PATH + str(key) + ".mp4")

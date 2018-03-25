@@ -11,6 +11,7 @@ import glob
 import logging
 import os
 import sys
+import json
 import time
 from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
@@ -43,6 +44,10 @@ OUTPUT_FILE_EXTENSION = '_output.png'
 STICKER_SELFIE_HIT = "sticker"
 
 VIDEO_BG_RESOURCES_DIRECTORY = "/mnt/video_bg_resources/"
+
+INPUT_VIDEO_PATH_METADATA = "/mnt/api_files/video/input/"
+OUTPUT_VIDEO_FILE_EXTENSION = "_output.mp4"
+VIDEO_METADATA_FILE_EXTENSION = "_metadata.txt"
 
 def parse_args():
     parser = argparse.ArgumentParser(description='End-to-end inference')
@@ -211,13 +216,14 @@ def video_image_segment(im):
     logger.warn(("PERSON NOT FOUND IN IMG!!!!!"))
     return found, segmented_images[0], segmented_binary_masks[0]
 
-def video_processing_cv(filepath, filename, bg_filename):
-    topLeft_bg_normalized = [0.3, 0.0]
-    selected_bg_width_normalized = 0.4
-    selected_bg_height_normalized = 0.8
+def video_processing_cv(filepath, filename, metadata):
+
+    topLeft_bg_normalized = [metadata['topLeft_bg_normalized_1'], metadata['topLeft_bg_normalized_2']]
+    selected_bg_width_normalized = metadata['selected_bg_width_normalized']
+    selected_bg_height_normalized = metadata['selected_bg_height_normalized']
+    bg_filename = metadata['bg_filename']
 
     image_list = []
-
     bg_im = cv2.imread(VIDEO_BG_RESOURCES_DIRECTORY + bg_filename)
 
     vidcap = cv2.VideoCapture(filepath)
@@ -226,7 +232,7 @@ def video_processing_cv(filepath, filename, bg_filename):
 
     success = True
     while True:
-        if (success and count<1):
+        if (success and count<10):
             found, segmented_image,mask = video_image_segment(image)
             im_mask = vis_utils.vis_binary_mask(image, mask)
             image = vid_utils.process(image, im_mask, bg_im, topLeft_bg_normalized, selected_bg_width_normalized, selected_bg_height_normalized)
@@ -238,9 +244,10 @@ def video_processing_cv(filepath, filename, bg_filename):
         count += 1
 
     logger.info("Total number of frames in video: "+ str(count))
-    new_video_filepath = DIRECTORY_TO_WRITE + "newVideo.mp4"
+    output_video_filename = filename.rstrip(".mp4") + OUTPUT_VIDEO_FILE_EXTENSION
+    new_video_filepath = DIRECTORY_TO_WRITE + output_video_filename
     vid_utils.write_images(image_list, new_video_filepath )
-    write_to_gcs(new_video_filepath, gcs_filename="newVideo.mp4")
+    write_to_gcs(new_video_filepath, output_video_filename)
     logger.info("Done writing")
 
 
@@ -277,7 +284,9 @@ class Handler(FileSystemEventHandler):
 
             if ".mp4" in original_filename:
                 logger.info("need to proccess video")
-                video_processing_cv(event.src_path, original_filename, "sky_news.jpg")
+                meta_filename = original_filename.rstrip(".mp4") + VIDEO_METADATA_FILE_EXTENSION
+                metadata = json.load(open(INPUT_VIDEO_PATH_METADATA + meta_filename))
+                video_processing_cv(event.src_path, original_filename, metadata)
                 logger.info("done mp4 processing")
 
 
