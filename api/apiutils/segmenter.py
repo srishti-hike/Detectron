@@ -218,7 +218,7 @@ def video_image_segment(im):
     return found, segmented_images[0], segmented_binary_masks[0]
 
 def video_processing_cv(filepath, filename, metadata):
-
+    logger.info(metadata)
     logger.info(metadata["topLeft_bg_normalized_1"])
     logger.info(metadata["topLeft_bg_normalized_1"].type)
     topLeft_bg_normalized = [metadata['topLeft_bg_normalized_1'], metadata['topLeft_bg_normalized_2']]
@@ -289,6 +289,7 @@ class Handler(FileSystemEventHandler):
                 logger.info("need to proccess video")
                 meta_filename = original_filename.rstrip(".mp4") + VIDEO_METADATA_FILE_EXTENSION
                 metadata = yaml.safe_load(open(INPUT_VIDEO_PATH_METADATA + meta_filename))
+                logger.info(metadata.type)
                 video_processing_cv(event.src_path, original_filename, metadata)
                 logger.info("done mp4 processing")
 
