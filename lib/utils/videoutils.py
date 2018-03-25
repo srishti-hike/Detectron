@@ -63,8 +63,8 @@ def process(image, mask, mask_bin, bg, topLeft_bg_normalized, selected_bg_width_
         epsilon = 0.003 * cv2.arcLength(c, True)
         approx = cv2.approxPolyDP(c, epsilon, True)
 
-        cv2.drawContours(image, [approx], -1, (255, 204, 204, 204), 10)
-        cv2.drawContours(image, [approx], -1, (255, 255, 255, 255), 6)
+        cv2.drawContours(image, [approx], -1, (255, 204, 204, 204), 5)
+        # cv2.drawContours(image, [approx], -1, (255, 255, 255, 255), 6)
     # width_offset = 10
     # height_offset = 10*height_image/width_image
     # final_image = image[height_offset/2:height_image - height_offset/2, width_offset/2:width_image - width_offset/2]
