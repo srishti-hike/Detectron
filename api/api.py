@@ -67,6 +67,16 @@ def upload_potraitsegmentation():
             url = CURL_PATH + str(key) + OUTPUT_FILE_EXTENSION
         )
 
+@app.route('/test', methods = ['POST'])
+def test():
+    if request.method == 'POST':
+        f = request.files['filename']
+        filename = secure_filename(f.filename)
+        return jsonify(
+            status= "file found",
+            name = filename
+        )
+
 @app.route('/video', methods = ['POST'])
 def upload_video():
     if request.method == 'POST':

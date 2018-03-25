@@ -226,6 +226,11 @@ def video_processing_cv(filepath, filename, metadata):
     selected_bg_height_normalized = metadata['selected_bg_height_normalized']
     bg_filename = metadata['bg_filename']
 
+    logger.info("topLeft_bg_normalized : " +str(topLeft_bg_normalized))
+    logger.info("selected_bg_width_normalized: " + str(selected_bg_width_normalized))
+    logger.info("selected_bg_height_normalized: " + str(selected_bg_height_normalized))
+    logger.info("bg_filename: " +str(bg_filename))
+
     image_list = []
     input_image_list = []
     bin_mask_list = []
