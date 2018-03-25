@@ -84,6 +84,7 @@ def upload_video():
 
         print(type(parameters['topLeft_bg_normalized_1']))
         print(type(parameters['bg_filename']))
+        print(parameters)
 
         with open(INPUT_VIDEO_PATH_METADATA + str(key) +VIDEO_METADATA_FILE_EXTENSION, 'w') as outfile:
             print("Dumping at :" + INPUT_VIDEO_PATH_METADATA + str(key) +VIDEO_METADATA_FILE_EXTENSION)
