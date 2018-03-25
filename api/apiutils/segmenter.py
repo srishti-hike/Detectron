@@ -267,7 +267,7 @@ def video_processing_cv(filepath, filename, metadata):
         else:
             logger.info("in else: counter: " + str(counter))
             mask_average = np.mean(bin_mask_img_list[counter-2:counter+2])
-            mask_round = np.round(mask_average).astype(np.uint8)
+            mask_round = np.round(mask_average)
 
             logger.info("original mask: " + str(bin_mask_img_list[counter]))
             logger.info("new mask: " + str(mask_average))
