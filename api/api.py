@@ -71,13 +71,23 @@ def upload_potraitsegmentation():
 def upload_video():
     if request.method == 'POST':
         f = request.files['file']
-        options = request.form['filecomment']
         filename = secure_filename(f.filename)
         key = uuid.uuid4()
 
+
+        parameters = {}
+        parameters['topLeft_bg_normalized_1'] = request.args.get('topLeft_bg_normalized_1')
+        parameters['topLeft_bg_normalized_2'] = request.args.get('topLeft_bg_normalized_2')
+        parameters['selected_bg_width_normalized'] = request.args.get('selected_bg_width_normalized')
+        parameters['selected_bg_height_normalized'] = request.args.get('selected_bg_height_normalized')
+        parameters['bg_filename'] = request.args.get('bg_filename')
+
+        print(type(parameters['topLeft_bg_normalized_1']))
+        print(type(parameters['bg_filename']))
+
         with open(INPUT_VIDEO_PATH_METADATA + str(key) +VIDEO_METADATA_FILE_EXTENSION, 'w') as outfile:
             print("Dumping at :" + INPUT_VIDEO_PATH_METADATA + str(key) +VIDEO_METADATA_FILE_EXTENSION)
-            json.dump(options, outfile)
+            json.dump(parameters, outfile)
 
         f.save(INPUT_FILE_PATH + str(key) + ".mp4")
 
