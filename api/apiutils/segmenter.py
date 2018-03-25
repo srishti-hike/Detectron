@@ -313,7 +313,7 @@ def video_processing_cv(filepath, filename, metadata):
     logger.info("Total number of frames in video: "+ str(count))
     output_video_filename = filename.rstrip(".mp4") + OUTPUT_VIDEO_FILE_EXTENSION
     new_video_filepath = DIRECTORY_TO_WRITE + output_video_filename
-    vid_utils.write_images(image_list, new_video_filepath )
+    vid_utils.write_images(image_list, new_video_filepath, filepath)
     write_to_gcs(new_video_filepath, output_video_filename)
     logger.info("Done writing")
 

@@ -4,6 +4,11 @@ import imageio
 import numpy as np
 import cv2
 
+from moviepy.editor import *
+from moviepy.editor import VideoFileClip, AudioFileClip
+from moviepy.editor import *
+
+
 MILLISECONDS_IN_SECOND= 1000.0
 DIRECTORY_TO_WATCH = "/mnt/api_files/input/"
 DIRECTORY_TEMP = "/mnt/api_files/tmp/"
@@ -14,7 +19,8 @@ STICKER_SELFIE_HIT = "sticker"
 
 VIDEO_BG_RESOURCES_DIRECTORY = "/mnt/video_bg_resources/"
 
-def write_images(images, new_video_filepath):
+def write_images(images, new_video_filepath, original_filepath):
+
     writer = imageio.get_writer(new_video_filepath, fps=25)
     count = 0
     for im in images:
@@ -24,6 +30,12 @@ def write_images(images, new_video_filepath):
     print("out of for loop")
     writer.close()
     print("done write_images")
+
+    Audioclip2 = AudioFileClip(original_filepath)
+    Audioclip2.write_audiofile(DIRECTORY_TEMP + "temp.mp3")
+    videoclip = VideoFileClip(new_video_filepath);
+    videoclip.write_videofile(new_video_filepath,
+                              audio=DIRECTORY_TEMP + "temp.mp3")
 
 
 def process(image, mask, mask_bin, bg, topLeft_bg_normalized, selected_bg_width_normalized, selected_bg_height_normalized):
