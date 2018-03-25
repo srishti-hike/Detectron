@@ -26,10 +26,8 @@ def write_images(images, new_video_filepath):
     print("done write_images")
 
 
-def process(image, mask, bg):
-    topLeft_bg_normalized = [0.3, 0.0]
-    selected_bg_width_normalized = 0.4
-    selected_bg_height_normalized = 0.8
+def process(image, mask, bg, topLeft_bg_normalized, selected_bg_width_normalized, selected_bg_height_normalized):
+
 
     height_image, width_image, depth_image = image.shape
     height_bg, width_bg, depth_bg = image.shape
@@ -56,4 +54,7 @@ def process(image, mask, bg):
                 image[i, j, :] = bg_image_resized[i, j, :]
 
     image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
+    # width_offset = 10
+    # height_offset = 10*height_image/width_image
+    # final_image = image[height_offset/2:height_image - height_offset/2, width_offset/2:width_image - width_offset/2]
     return image

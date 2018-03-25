@@ -212,6 +212,10 @@ def video_image_segment(im):
     return found, segmented_images[0], segmented_binary_masks[0]
 
 def video_processing_cv(filepath, filename, bg_filename):
+    topLeft_bg_normalized = [0.3, 0.0]
+    selected_bg_width_normalized = 0.4
+    selected_bg_height_normalized = 0.8
+
     image_list = []
 
     bg_im = cv2.imread(VIDEO_BG_RESOURCES_DIRECTORY + bg_filename)
@@ -225,7 +229,7 @@ def video_processing_cv(filepath, filename, bg_filename):
         if (success and count<1):
             found, segmented_image,mask = video_image_segment(image)
             im_mask = vis_utils.vis_binary_mask(image, mask)
-            image = vid_utils.process(image, im_mask, bg_im)
+            image = vid_utils.process(image, im_mask, bg_im, topLeft_bg_normalized, selected_bg_width_normalized, selected_bg_height_normalized)
             image_list.insert(len(image_list), image)
         else:
             break
