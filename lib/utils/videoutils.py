@@ -3,7 +3,7 @@
 import imageio
 import numpy as np
 import cv2
-
+import os
 from moviepy.editor import *
 from moviepy.editor import VideoFileClip, AudioFileClip
 from moviepy.editor import *
@@ -19,9 +19,9 @@ STICKER_SELFIE_HIT = "sticker"
 
 VIDEO_BG_RESOURCES_DIRECTORY = "/mnt/video_bg_resources/"
 
-def write_images(images, new_video_filepath):
+def write_images(images, new_video_filepath, video_filename):
 
-    writer = imageio.get_writer(new_video_filepath, fps=25)
+    writer = imageio.get_writer(DIRECTORY_TEMP + video_filename, fps=25)
     count = 0
     for im in images:
         count = count + 1
@@ -29,7 +29,20 @@ def write_images(images, new_video_filepath):
         writer.append_data(im)
     print("out of for loop")
     writer.close()
-    print("done write_images")
+
+    cmd = "ffmpeg -i " + DIRECTORY_TEMP + video_filename + " -i "
+    + DIRECTORY_TEMP + video_filename.rstrip(".mp4")
+    + ".mp3" +" -c:v copy -c:a aac -strict experimental "+ new_video_filepath
+
+    returned_val = os.system(cmd)
+    print("returned value: " +returned_val)
+    print("done write_images and audio")
+
+def extract_audio(video_path, video_filename):
+    audio_filename = video_filename.rstrip(".mp4") + ".mp3"
+    cmd = "ffmpeg -i " + video_path +  " -b:a 192K -vn " +  DIRECTORY_TEMP + audio_filename
+    returned_value = os.system(cmd)
+    return returned_value
 
 
 def process(image, mask, mask_bin, bg, topLeft_bg_normalized, selected_bg_width_normalized, selected_bg_height_normalized):
@@ -45,8 +58,6 @@ def process(image, mask, mask_bin, bg, topLeft_bg_normalized, selected_bg_width_
 
     bg_image = np.zeros(shape=(int(selected_bg_height), int(selected_bg_width), 3))
 
-    print("selected_bg_height" + str(selected_bg_height))
-    print("selected_bg_width" + str(selected_bg_width))
     for i in range(0, int(selected_bg_height)):
         for j in range(0, int(selected_bg_width)):
             for k in range(0, 3):  # ...

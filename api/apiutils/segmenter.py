@@ -256,17 +256,15 @@ def video_processing_cv(filepath, filename, metadata):
     selected_bg_width_normalized = float(metadata['selected_bg_width_normalized'])
     selected_bg_height_normalized = float(metadata['selected_bg_height_normalized'])
     bg_filename = metadata['bg_filename']
-
-    logger.info("topLeft_bg_normalized : " +str(topLeft_bg_normalized))
-    logger.info("selected_bg_width_normalized: " + str(selected_bg_width_normalized))
-    logger.info("selected_bg_height_normalized: " + str(selected_bg_height_normalized))
-    logger.info("bg_filename: " +str(bg_filename))
+    output_video_filename = filename.rstrip(".mp4") + OUTPUT_VIDEO_FILE_EXTENSION
 
     image_list = []
     input_image_list = []
     bin_mask_list = []
     bin_mask_img_list = []
     bg_im = cv2.imread(VIDEO_BG_RESOURCES_DIRECTORY + bg_filename)
+    returned_value = extract_audio(filepath, output_video_filename)
+    logger.info("audio extraction done")
 
     vidcap = cv2.VideoCapture(filepath)
     success, image = vidcap.read()
@@ -311,9 +309,9 @@ def video_processing_cv(filepath, filename, metadata):
     #
 
     logger.info("Total number of frames in video: "+ str(count))
-    output_video_filename = filename.rstrip(".mp4") + OUTPUT_VIDEO_FILE_EXTENSION
+
     new_video_filepath = DIRECTORY_TO_WRITE + output_video_filename
-    vid_utils.write_images(image_list, new_video_filepath)
+    vid_utils.write_images(image_list, new_video_filepath, output_video_filename)
     write_to_gcs(new_video_filepath, output_video_filename)
     logger.info("Done writing")
 
