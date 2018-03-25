@@ -150,6 +150,16 @@ def add_sticker_border(segmented_img, styled_img, mask, border_thick =8):
     return styled_img
 
 
+def adjust_gamma(image, gamma=1.0):
+    # build a lookup table mapping the pixel values [0, 255] to
+    # their adjusted gamma values
+    invGamma = 1.0 / gamma
+    table = np.array([((i / 255.0) ** invGamma) * 255
+                      for i in np.arange(0, 256)]).astype("uint8")
+
+    # apply gamma correction using the lookup table
+    return cv2.LUT(image, table)
+
 def vis_class(img, pos, class_str, font_scale=0.35):
     """Visualizes the class."""
     x0, y0 = int(pos[0]), int(pos[1])

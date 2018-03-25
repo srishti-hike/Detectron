@@ -204,6 +204,7 @@ def style_transfer(input_file_path, input_file_name, mask):
     img = cv2.imread(input_file_path + input_file_name)
     styled_img = cv2.imread(tmp_file_path + output_file_name)
     img_final = vis_utils.add_sticker_border(img, styled_img, mask)
+    img_final = vis_utils.adjust_gamma(img_final, 0.5)
 
     return returned_val, DIRECTORY_TO_WRITE,  output_file_name, img_final
 
