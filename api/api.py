@@ -78,7 +78,7 @@ def upload_video():
             print("Dumping at :" + INPUT_VIDEO_PATH_METADATA + str(key) +"_metadata.txt")
             json.dump(options, outfile)
 
-        f.save(INPUT_FILE_PATH + secure_filename(f.filename))
+        f.save(INPUT_FILE_PATH + str(key) + ".mp4")
 
         return jsonify(
             url = CURL_PATH + str(key) + OUTPUT_VIDEO_FILE_EXTENSION
