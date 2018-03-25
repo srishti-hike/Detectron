@@ -258,11 +258,14 @@ def video_processing_cv(filepath, filename, metadata):
 
 
     for counter, bin_mask_img in enumerate(bin_mask_img_list):
+        logger.info("len(bin_mask_img_list): "+str(len(bin_mask_img_list)))
         if counter == 0 or counter == 1 or counter == len(bin_mask_img_list)-1 or counter == len(bin_mask_img_list)-2:
+            logger.info("in if: counter: "+ str(counter))
             new_bin_masks.insert(len(new_bin_masks), bin_mask_img)
             processed_image = vid_utils.process(input_image_list[counter], bin_mask_img, bg_im, topLeft_bg_normalized, selected_bg_width_normalized, selected_bg_height_normalized)
             processed_images.insert(len(processed_images), processed_image)
         else:
+            logger.info("in else: counter: " + str(counter))
             mask_average = np.mean(new_bin_masks[counter-2:counter+2])
             mask_round = np.round(mask_average).astype(int)
             processed_image = vid_utils.process(input_image_list[counter], mask_round, bg_im, topLeft_bg_normalized,
