@@ -253,6 +253,9 @@ def video_image_segment(im):
 
 def video_processing_cv(filepath, filename, metadata):
 
+    print(type(metadata['topLeft_bg_normalized_1']))
+    print(type(metadata['topLeft_bg_normalized_1']))
+
     if isinstance(metadata['topLeft_bg_normalized_1'],float) == False:
         topLeft_bg_normalized =[float(metadata['topLeft_bg_normalized_1']), float(metadata['topLeft_bg_normalized_2'])]
         selected_bg_width_normalized = float(metadata['selected_bg_width_normalized'])
