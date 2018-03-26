@@ -82,7 +82,7 @@ def process(image, mask, mask_bin, bg, topLeft_bg_normalized, selected_bg_width_
     #
     #     cv2.drawContours(image, [approx], -1, (255, 204, 204, 204), 3)
     
-    cv2.drawContours(image, contours, -1, (255, 204, 204, 204), 1, cv2.LINE_AA)
+    # cv2.drawContours(image, contours, -1, (255, 204, 204, 204), 1, cv2.LINE_AA)
 
     # width_offset = 10
     # height_offset = 10*height_image/width_image
