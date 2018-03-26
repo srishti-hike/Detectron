@@ -273,7 +273,7 @@ def video_processing_cv(filepath, filename, metadata):
 
     success = True
     while True:
-        if (success and count<10):
+        if (success):
             found, segmented_image,mask = video_image_segment(image)
             im_mask = vis_utils.vis_binary_mask(image, mask)
             # input_image_list.insert(len(input_image_list), image)
