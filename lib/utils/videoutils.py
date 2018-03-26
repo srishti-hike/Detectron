@@ -49,7 +49,7 @@ def process(image, mask, mask_bin, bg, topLeft_bg_normalized, selected_bg_width_
 
 
     height_image, width_image, depth_image = image.shape
-    height_bg, width_bg, depth_bg = image.shape
+    height_bg, width_bg, depth_bg = bg.shape
     print("topLeft_bg_normalized" + str(topLeft_bg_normalized))
     print("selected_bg_width_normalized" + str(selected_bg_width_normalized))
     print("selected_bg_height_normalized:"+str(selected_bg_height_normalized))
