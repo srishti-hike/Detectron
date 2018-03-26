@@ -21,7 +21,7 @@ VIDEO_BG_RESOURCES_DIRECTORY = "/mnt/video_bg_resources/"
 
 def write_images(images, new_video_filepath, video_filename):
 
-    writer = imageio.get_writer(new_video_filepath + video_filename, fps=25)
+    writer = imageio.get_writer(new_video_filepath, fps=25)
     count = 0
     for im in images:
         count = count + 1
@@ -36,7 +36,7 @@ def write_images(images, new_video_filepath, video_filename):
     #
     # returned_val = os.system(cmd)
     # print("returned value: " +str(returned_val))
-    print("done write_images and audio")
+    print("done write_images at: " + str(new_video_filepath))
 
 # def extract_audio(video_path, video_filename):
 #     audio_filename = video_filename.rstrip(".mp4") + ".mp3"
