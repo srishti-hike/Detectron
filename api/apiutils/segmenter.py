@@ -269,6 +269,10 @@ def video_processing_cv(filepath, filename, metadata):
         topLeft_bg_normalized =[float(metadata['topLeft_bg_normalized_1']), float(metadata['topLeft_bg_normalized_2'])]
         selected_bg_width_normalized = float(metadata['selected_bg_width_normalized'])
         selected_bg_height_normalized = float(metadata['selected_bg_height_normalized'])
+    else:
+        topLeft_bg_normalized = [metadata['topLeft_bg_normalized_1'], metadata['topLeft_bg_normalized_2']]
+        selected_bg_width_normalized = metadata['selected_bg_width_normalized']
+        selected_bg_height_normalized = metadata['selected_bg_height_normalized']
 
 
     bg_filename = metadata['bg_filename']
