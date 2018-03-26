@@ -89,6 +89,9 @@ def upload_video():
         filename = secure_filename(f.filename)
         key = uuid.uuid4()
 
+        print(request.args)
+        print(request.values)
+        print(request.files)
 
         parameters = {}
         parameters['topLeft_bg_normalized_1'] = request.args.get('topLeft_bg_normalized_1')
