@@ -251,6 +251,15 @@ def video_image_segment(im):
     logger.warn(("PERSON NOT FOUND IN IMG!!!!!"))
     return found, segmented_images[0], segmented_binary_masks[0]
 
+def removebytes(filepath, filename):
+    newfilepath = DIRECTORY_TEMP + filename.rstrip(".mp4") + "trim.mp4"
+    with open(filepath, 'rb') as inFile:
+        inFile.seek(60)
+    with open(newfilepath, 'wb') as out_file:
+        for i in inFile.read():
+            out_file.write(i)
+    return newfilepath
+
 def video_processing_cv(filepath, filename, metadata):
 
     print(type(metadata['topLeft_bg_normalized_1']))
@@ -272,6 +281,9 @@ def video_processing_cv(filepath, filename, metadata):
     bg_im = cv2.imread(VIDEO_BG_RESOURCES_DIRECTORY + bg_filename)
     # returned_value = vid_utils.extract_audio(filepath, output_video_filename)
     logger.info("audio extraction done")
+
+    newpath = removebytes(filepath, filename)
+    filepath = newpath
 
     vidcap = cv2.VideoCapture(filepath)
     success, image = vidcap.read()
