@@ -145,7 +145,7 @@ def main(args):
 
     for i, im_name in enumerate(im_list):
         out_name = os.path.join(
-            args.output_dir, '{}'.format(os.path.basename(im_name) + '.pdf')
+            args.output_dir, '{}'.format(os.path.basename(im_name) + '.png')
         )
         logger.info('Processing {} -> {}'.format(im_name, out_name))
         im = cv2.imread(im_name)
@@ -164,7 +164,7 @@ def main(args):
                 'rest (caches and auto-tuning need to warm up)'
             )
 
-        segmented_images, classes, scores = vis_utils.segmented_images(
+        segmented_images, classes, scores, segmented_binary_masks = vis_utils.segmented_images_in_original_image_size(
             im,
             im_name,
             args.output_dir,
@@ -181,7 +181,9 @@ def main(args):
         for index, value in enumerate(segmented_images):
             if classes[index] == args.class_label and not found:
                 logger.info('Writing output file to: {}'.format(str(i)))
-                cv2.imwrite(args.output_dir + '/' + str(i) + '_' + args.class_label + '_' + `index` + ".png", value)
+                bin_mask = vis_utils.vis_binary_mask(img, segmented_binary_masks[index])
+                cv2.imwrite(out_name, value)
+                cv2.imwrite(out_name.rstrip(".png") + "bin.png", value)
                 found = True
                 # add_background(args.output_dir + '/' + str(i) + '_' + args.class_label + '_' + `index` + ".png")
 
