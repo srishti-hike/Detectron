@@ -181,7 +181,7 @@ def main(args):
         for index, value in enumerate(segmented_images):
             if classes[index] == args.class_label and not found:
                 logger.info('Writing output file to: {}'.format(str(i)))
-                bin_mask = vis_utils.vis_binary_mask(img, segmented_binary_masks[index])
+                bin_mask = vis_utils.vis_binary_mask(im, segmented_binary_masks[index])
                 cv2.imwrite(out_name, value)
                 cv2.imwrite(out_name.rstrip(".png") + "bin.png", value)
                 found = True
