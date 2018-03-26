@@ -264,7 +264,7 @@ def video_processing_cv(filepath, filename, metadata):
     bin_mask_list = []
     bin_mask_img_list = []
     bg_im = cv2.imread(VIDEO_BG_RESOURCES_DIRECTORY + bg_filename)
-    returned_value = vid_utils.extract_audio(filepath, output_video_filename)
+    # returned_value = vid_utils.extract_audio(filepath, output_video_filename)
     logger.info("audio extraction done")
 
     vidcap = cv2.VideoCapture(filepath)
@@ -273,7 +273,7 @@ def video_processing_cv(filepath, filename, metadata):
 
     success = True
     while True:
-        if (success):
+        if (success and count<10):
             found, segmented_image,mask = video_image_segment(image)
             im_mask = vis_utils.vis_binary_mask(image, mask)
             # input_image_list.insert(len(input_image_list), image)

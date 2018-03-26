@@ -21,7 +21,7 @@ VIDEO_BG_RESOURCES_DIRECTORY = "/mnt/video_bg_resources/"
 
 def write_images(images, new_video_filepath, video_filename):
 
-    writer = imageio.get_writer(DIRECTORY_TEMP + video_filename, fps=25)
+    writer = imageio.get_writer(new_video_filepath + video_filename, fps=25)
     count = 0
     for im in images:
         count = count + 1
@@ -30,19 +30,19 @@ def write_images(images, new_video_filepath, video_filename):
     print("out of for loop")
     writer.close()
 
-    cmd = "ffmpeg -i " + DIRECTORY_TEMP + video_filename + " -i " \
-          + DIRECTORY_TEMP + video_filename.rstrip(".mp4") \
-          + ".mp3" + " -c:v copy -c:a aac -strict experimental " + new_video_filepath
-
-    returned_val = os.system(cmd)
-    print("returned value: " +str(returned_val))
+    # cmd = "ffmpeg -i " + DIRECTORY_TEMP + video_filename + " -i " \
+    #       + DIRECTORY_TEMP + video_filename.rstrip(".mp4") \
+    #       + ".mp3" + " -c:v copy -c:a aac -strict experimental " + new_video_filepath
+    #
+    # returned_val = os.system(cmd)
+    # print("returned value: " +str(returned_val))
     print("done write_images and audio")
 
-def extract_audio(video_path, video_filename):
-    audio_filename = video_filename.rstrip(".mp4") + ".mp3"
-    cmd = "ffmpeg -i " + video_path +  " -b:a 192K -vn " +  DIRECTORY_TEMP + audio_filename
-    returned_value = os.system(cmd)
-    return returned_value
+# def extract_audio(video_path, video_filename):
+#     audio_filename = video_filename.rstrip(".mp4") + ".mp3"
+#     cmd = "ffmpeg -i " + video_path +  " -b:a 192K -vn " +  DIRECTORY_TEMP + audio_filename
+#     returned_value = os.system(cmd)
+#     return returned_value
 
 
 def process(image, mask, mask_bin, bg, topLeft_bg_normalized, selected_bg_width_normalized, selected_bg_height_normalized):
