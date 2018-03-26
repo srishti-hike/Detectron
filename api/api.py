@@ -97,6 +97,16 @@ def upload_video():
         parameters['selected_bg_height_normalized'] = request.args.get('selected_bg_height_normalized')
         parameters['bg_filename'] = request.args.get('bg_filename')
 
+        if (parameters['topLeft_bg_normalized_1'] == None or parameters['topLeft_bg_normalized_2'] == None
+            or parameters['selected_bg_width_normalized'] == None or
+                    parameters['selected_bg_height_normalized'] == None or
+                parameters['bg_filename'] == None):
+            parameters['topLeft_bg_normalized_1'] = 0.3
+            parameters['topLeft_bg_normalized_2'] = 0.0
+            parameters['selected_bg_width_normalized'] = 0.7
+            parameters['selected_bg_height_normalized'] = 0.8
+            parameters['bg_filename'] = "graffiti-final-step.jpg"
+
         print(type(parameters['topLeft_bg_normalized_1']))
         print(type(parameters['bg_filename']))
         print(parameters)
