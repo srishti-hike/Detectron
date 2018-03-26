@@ -255,9 +255,9 @@ def removebytes(filepath, filename):
     newfilepath = DIRECTORY_TEMP + filename.rstrip(".mp4") + "trim.mp4"
     with open(filepath, 'rb') as inFile:
         inFile.seek(60)
-    with open(newfilepath, 'wb') as out_file:
-        for i in inFile.read():
-            out_file.write(i)
+        with open(newfilepath, 'wb') as out_file:
+            for i in inFile.read():
+                out_file.write(i)
     return newfilepath
 
 def video_processing_cv(filepath, filename, metadata):
