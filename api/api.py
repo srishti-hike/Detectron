@@ -84,14 +84,19 @@ def test():
 
 @app.route('/video', methods = ['POST'])
 def upload_video():
+    print(request.args)
+    print(request.values)
+    print(request.files)
+
     if request.method == 'POST':
+        print(request.args)
+        print(request.values)
+        print(request.files)
+
         f = request.files['uploaded_file']
         filename = secure_filename(f.filename)
         key = uuid.uuid4()
 
-        print(request.args)
-        print(request.values)
-        print(request.files)
 
         parameters = {}
         parameters['topLeft_bg_normalized_1'] = request.args.get('topLeft_bg_normalized_1')
