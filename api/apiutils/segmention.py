@@ -95,17 +95,13 @@ class Segmenter(object):
         self.logger.info("written to gcs: " + local_filepath + ", returned value: " + str(returned_value))
         return returned_value
 
-    def extract_segments(self, im_path):
+    def extract_segments(self, im_path, im):
         """ Use Detectron to extract all the segments in the image,
         their corresponding classes,
         and their binary masks"""
-        #TODO #Srishti Need to get all segments in the image size and not
-        #TODO bounding box so that we can combine multiple segments in the output image/mask!
-        out_name = os.path.join(
-            self.conf['io']['output_dir'], '{}'.format(os.path.basename(im_path) + '.pdf')
-        )
-        self.logger.info('Processing {} -> {}'.format(im_path, out_name))
-        im = cv2.imread(im_path)
+
+
+        # im = cv2.imread(im_path)
 
         if (im.shape[0] > 650):
             im = self.image_resize(im, height=600)
@@ -120,7 +116,7 @@ class Segmenter(object):
         for k, v in timers.items():
             self.logger.info(' | {}: {:.3f}s'.format(k, v.average_time))
 
-        segmented_images, classes, scores, segmented_binary_masks = vis_utils.segmented_images(
+        segmented_images, classes, scores, segmented_binary_masks = vis_utils.segmented_images_in_original_image_size(
             im,
             im_path,
             self.conf['io']['output_dir'],
@@ -136,26 +132,50 @@ class Segmenter(object):
         return segmented_images, classes, scores, segmented_binary_masks
 
 
-    def process_segments(self, im_path):
+    def compute_mask(self, im_path, im):
         """Use segment list given by def extract_segments to filter desired segments
         and compute a combined image and binary mask using all the segments"""
-        #TODO: #Srishti Filter a list of masks and combine masks to create the final image
 
-        segmented_images, classes, scores, segmented_binary_masks = self.extract_segments(im_path)
+        segmented_images, classes, scores, segmented_binary_masks = self.extract_segments(im_path, im)
 
-        list_masks = []
-        list_images = []
+        super_mask = None
         if len(segmented_images) > 0:
             for index, value in enumerate(segmented_images):
                 if classes[index] in self.conf['detectron']['class_label']:
+                    if super_mask is None:
+                        super_mask = np.zeros(value[:2])
                     bin_mask = segmented_binary_masks[index]
-                    list_masks.append(bin_mask)
-                    list_images.append(value)
-
-        return list_images, list_masks
+                    super_mask = np.logical_or(super_mask, bin_mask)
+        return super_mask
 
 
     def process_image(self, im_path):
+        im = cv2.imread(im_path)
+
+        out_name = os.path.join(
+            self.conf['io']['output_dir'], '{}'.format(os.path.basename(im_path) + '.png')
+        )
+        k = out_name.rfind("/")
+        output_filename = out_name[k + 1:]
+
+        self.logger.info('Processing {} -> {}'.format(im_path, out_name))
+        mask = self.compute_mask(im_path, im)
+        img = np.zeros(im.shape)
+
+        for x in xrange(im.shape[0]):
+            for y in xrange(im.shape[1]):
+                if mask[x, y] == 0:
+                    img[x, y, :] = [255, 255, 255]
+                else:
+                    img[x, y, :] = im[x, y, :]
+
+        self.write_to_local(out_name, img)
+        self.write_to_gcs(out_name, output_filename)
+        return output_filename
+
+
+
+
 
 
 
