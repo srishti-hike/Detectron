@@ -1,0 +1,22 @@
+api:
+  port: 80
+detectron:
+  gpu_id: 0
+  cfg: configs/12_2017_baselines/e2e_mask_rcnn_R-101-FPN_2x.yaml
+  class_label: - person
+              - cat
+              - dog
+  image_ext: jpg
+  weights: https://s3-us-west-2.amazonaws.com/detectron/35861858/12_2017_baselines/e2e_mask_rcnn_R-101-FPN_2x.yaml.02_32_51.SgT4y1cO/output/train/coco_2014_train:coco_2014_valminusminival/generalized_rcnn/model_final.pkl
+  output_dir: /tmp/detectron-visualizations
+  im_or_folder: srishti
+io:
+  gs_bucket: gs://microapps-175405.appspot.com/srishti/
+  output_dir: /mnt/api_files/output/
+  output_file_extension: _output.png
+  input_dir: /mnt/api_files/input/
+  temp_dir: /mnt/api_files/tmp/
+  selfie_sticker_hit: sticker
+math:
+  millisecond_in_second: 1000.0
+

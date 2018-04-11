@@ -10,6 +10,8 @@ from flask import Flask, render_template, request, jsonify
 from werkzeug import secure_filename
 from flask import send_from_directory
 
+from apiutils.config import config
+
 
 app = Flask(__name__)
 
@@ -82,52 +84,7 @@ def test():
             name = filename
         )
 
-@app.route('/video', methods = ['POST'])
-def upload_video():
-    print(request.args)
-    print(request.values)
-    print(request.files)
-
-    if request.method == 'POST':
-        print(request.args)
-        print(request.values)
-        print(request.files)
-
-        f = request.files['uploaded_file']
-        filename = secure_filename(f.filename)
-        key = uuid.uuid4()
-
-
-        parameters = {}
-        parameters['topLeft_bg_normalized_1'] = request.args.get('topLeft_bg_normalized_1')
-        parameters['topLeft_bg_normalized_2'] = request.args.get('topLeft_bg_normalized_2')
-        parameters['selected_bg_width_normalized'] = request.args.get('selected_bg_width_normalized')
-        parameters['selected_bg_height_normalized'] = request.args.get('selected_bg_height_normalized')
-        parameters['bg_filename'] = request.args.get('bg_filename')
-
-        if (parameters['topLeft_bg_normalized_1'] == None or parameters['topLeft_bg_normalized_2'] == None
-            or parameters['selected_bg_width_normalized'] == None or
-                    parameters['selected_bg_height_normalized'] == None or
-                parameters['bg_filename'] == None):
-            parameters['topLeft_bg_normalized_1'] = 0.3
-            parameters['topLeft_bg_normalized_2'] = 0.0
-            parameters['selected_bg_width_normalized'] = 0.7
-            parameters['selected_bg_height_normalized'] = 0.8
-            parameters['bg_filename'] = "graffiti-final-step.jpg"
-
-        print(type(parameters['topLeft_bg_normalized_1']))
-        print(type(parameters['bg_filename']))
-        print(parameters)
-
-        with open(INPUT_VIDEO_PATH_METADATA + str(key) +VIDEO_METADATA_FILE_EXTENSION, 'w') as outfile:
-            print("Dumping at :" + INPUT_VIDEO_PATH_METADATA + str(key) +VIDEO_METADATA_FILE_EXTENSION)
-            json.dump(parameters, outfile)
-
-        f.save(INPUT_FILE_PATH + str(key) + ".mp4")
-
-        return jsonify(
-            url = CURL_PATH + str(key) + OUTPUT_VIDEO_FILE_EXTENSION
-        )
-
 if __name__ == '__main__':
-      app.run(host='0.0.0.0', port=80)
+    conf = config.get_config()
+    print(conf)
+    app.run(host='0.0.0.0', port=80)
