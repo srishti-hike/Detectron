@@ -634,8 +634,15 @@ def segmented_images_in_original_image_size(
             w_ratio = .4
             e = masks[:, :, i]
 
-            for channel in range(3):
-                img[:,:, channel] = im[:,:, channel] * e[:,:]
+            # for channel in range(3):
+            #     img[:,:, channel] = im[:,:, channel] * e[:,:]
+
+            for x in xrange(im.shape[0]):
+                for y in xrange(im.shape[1]):
+                    if e[x, y] == 0:
+                        img[x,y,:] = [255,255,255]
+                    else:
+                        img[x,y,:] = im[x,y,:]
 
             _, contour, hier = cv2.findContours(
                 e.copy(), cv2.RETR_CCOMP, cv2.CHAIN_APPROX_NONE)

@@ -163,29 +163,34 @@ def main(args):
                 ' \ Note: inference on the first image will be slower than the '
                 'rest (caches and auto-tuning need to warm up)'
             )
+        try:
+            segmented_images, classes, scores, segmented_binary_masks = vis_utils.segmented_images_in_original_image_size(
+                im,
+                im_name,
+                args.output_dir,
+                cls_boxes,
+                cls_segms,
+                cls_keyps,
+                dataset=dummy_coco_dataset,
+                box_alpha=0.3,
+                show_class=True,
+                thresh=0.7,
+                kp_thresh=2
+            )
+            found = False
+            if segmented_images is not None:
+                for index, value in enumerate(segmented_images):
+                    if classes[index] == args.class_label and not found:
+                        logger.info('Writing output file to: {}'.format(str(out_name)))
+                        bin_mask = vis_utils.vis_binary_mask(im, segmented_binary_masks[index])
+                        cv2.imwrite(out_name, value)
+                        cv2.imwrite(out_name.rstrip(".png") + "bin.png", bin_mask)
+                        found = True
+                        # add_background(args.output_dir + '/' + str(i) + '_' + args.class_label + '_' + `index` + ".png")
 
-        segmented_images, classes, scores, segmented_binary_masks = vis_utils.segmented_images_in_original_image_size(
-            im,
-            im_name,
-            args.output_dir,
-            cls_boxes,
-            cls_segms,
-            cls_keyps,
-            dataset=dummy_coco_dataset,
-            box_alpha=0.3,
-            show_class=True,
-            thresh=0.7,
-            kp_thresh=2
-        )
-        found = False
-        for index, value in enumerate(segmented_images):
-            if classes[index] == args.class_label and not found:
-                logger.info('Writing output file to: {}'.format(str(i)))
-                bin_mask = vis_utils.vis_binary_mask(im, segmented_binary_masks[index])
-                cv2.imwrite(out_name, value)
-                cv2.imwrite(out_name.rstrip(".png") + "bin.png", bin_mask)
-                found = True
-                # add_background(args.output_dir + '/' + str(i) + '_' + args.class_label + '_' + `index` + ".png")
+        except:
+            print("Exception caught for file: " + out_name)
+            "Unexpected error:", sys.exc_info()[0]
 
 if __name__ == '__main__':
     workspace.GlobalInit(['caffe2', '--caffe2_log_level=0'])
