@@ -11,7 +11,7 @@ from werkzeug import secure_filename
 from flask import send_from_directory
 
 from apiutils.config import config
-from apiutils import segmentation
+from apiutils.segmentation import Segmenter
 
 
 app = Flask(__name__)
@@ -23,7 +23,7 @@ app = Flask(__name__)
 # STICKER_SELFIE_HIT = "sticker"
 
 conf = config.get_config()
-seg = segmentation.Segmentation()
+seg = Segmenter()
 
 @app.route('/')
 def hello_world():

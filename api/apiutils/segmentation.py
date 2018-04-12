@@ -48,7 +48,7 @@ class Segmenter(object):
         workspace.GlobalInit(['caffe2', '--caffe2_log_level=0'])
         utils.logging.setup_logging(__name__)
         self.logger = logging.getLogger(__name__)
-
+        self.logger.info("In init of Segmenter, logging setup")
         # Loading conf
         self.conf = config.get_config()
 
@@ -104,7 +104,7 @@ class Segmenter(object):
         # im = cv2.imread(im_path)
 
         if (im.shape[0] > 650):
-            im = self.image_resize(im, height=600)
+            im = self.resize_image(im, height=600)
 
         timers = defaultdict(Timer)
         t = time.time()
@@ -143,7 +143,7 @@ class Segmenter(object):
             for index, value in enumerate(segmented_images):
                 if classes[index] in self.conf['detectron']['class_label']:
                     if super_mask is None:
-                        super_mask = np.zeros(value[:2])
+                        super_mask = np.zeros(value.shape[:2])
                     bin_mask = segmented_binary_masks[index]
                     super_mask = np.logical_or(super_mask, bin_mask)
         return super_mask
@@ -161,6 +161,9 @@ class Segmenter(object):
         self.logger.info('Processing {} -> {}'.format(im_path, out_name))
         mask = self.compute_mask(im_path, im)
         img = np.zeros(im.shape)
+
+        self.logger.info("im shape: " + str(im.shape))
+        self.logger.info("mask shape: " + str(mask.shape))
 
         for x in xrange(im.shape[0]):
             for y in xrange(im.shape[1]):
