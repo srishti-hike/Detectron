@@ -17,6 +17,7 @@ io:
   input_dir: /mnt/api_files/input/
   temp_dir: /mnt/api_files/tmp/
   selfie_sticker_hit: sticker
+  curl_path:
 math:
   millisecond_in_second: 1000.0
 
