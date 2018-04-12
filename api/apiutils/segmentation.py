@@ -100,12 +100,6 @@ class Segmenter(object):
         their corresponding classes,
         and their binary masks"""
 
-
-        # im = cv2.imread(im_path)
-
-        if (im.shape[0] > 650):
-            im = self.resize_image(im, height=600)
-
         timers = defaultdict(Timer)
         t = time.time()
         with c2_utils.NamedCudaScope(0):
@@ -115,7 +109,7 @@ class Segmenter(object):
         self.logger.info('Inference time: {:.3f}s'.format(time.time() - t))
         for k, v in timers.items():
             self.logger.info(' | {}: {:.3f}s'.format(k, v.average_time))
-
+        # TODO #srishti error/bug here if no relevant segments found l:125
         segmented_images, classes, scores, segmented_binary_masks = vis_utils.segmented_images_in_original_image_size(
             im,
             im_path,
@@ -159,6 +153,10 @@ class Segmenter(object):
         output_filename = out_name[k + 1:]
 
         self.logger.info('Processing {} -> {}'.format(im_path, out_name))
+
+        if (im.shape[0] > 650):
+            im = self.resize_image(im, height=600)
+
         mask = self.compute_mask(im_path, im)
         img = np.zeros(im.shape)
 
